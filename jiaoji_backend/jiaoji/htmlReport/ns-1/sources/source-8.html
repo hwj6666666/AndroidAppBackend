@@ -1,0 +1,228 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > UserController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.example.jiaoji.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: UserController (org.example.jiaoji.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (28/28)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.example.jiaoji.controller;
+&nbsp;
+&nbsp;import org.example.jiaoji.pojo.Objects;
+&nbsp;import org.example.jiaoji.pojo.Remark;
+&nbsp;import org.example.jiaoji.pojo.RetType;
+&nbsp;import org.example.jiaoji.pojo.Topic;
+&nbsp;import org.example.jiaoji.pojo.User;
+&nbsp;import org.example.jiaoji.service.ObjectService;
+&nbsp;import org.example.jiaoji.service.UserService;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@CrossOrigin
+<b class="fc">&nbsp;public class UserController {</b>
+&nbsp;    @Autowired
+&nbsp;    private UserService userService;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private ObjectService objectService;
+&nbsp;
+&nbsp;    @GetMapping(&quot;/user&quot;)
+&nbsp;    @ResponseBody
+&nbsp;    public ResponseEntity&lt;List&lt;User&gt;&gt; getAllUser() {
+<b class="fc">&nbsp;        List&lt;User&gt; users = userService.SelectAll();</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(users);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/user/{id}&quot;)
+&nbsp;    @ResponseBody
+&nbsp;    public ResponseEntity&lt;User&gt; getUserById(@PathVariable(&quot;id&quot;) Integer id) {
+<b class="fc">&nbsp;        User user = userService.SelectByUserId(id);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(user);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/user/{id}/topics&quot;)
+&nbsp;    @ResponseBody
+&nbsp;    public ResponseEntity&lt;List&lt;Topic&gt;&gt; getTopicsById(@PathVariable(&quot;id&quot;) Integer id) {
+<b class="fc">&nbsp;        List&lt;Topic&gt; topics = userService.SelectTopicsById(id);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(topics);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/user/{id}/objects&quot;)
+&nbsp;    @ResponseBody
+&nbsp;    public ResponseEntity&lt;List&lt;Objects&gt;&gt; getObjectsById(@PathVariable(&quot;id&quot;) Integer id) {
+<b class="fc">&nbsp;        List&lt;Objects&gt; objects = userService.SelectObjectsById(id);</b>
+<b class="fc">&nbsp;        for (Objects object : objects) {</b>
+<b class="fc">&nbsp;            object.setAveScore(objectService.getAveScore(object.getId()));</b>
+<b class="fc">&nbsp;            object.setHottestRemark(objectService.getHottestRemark(object.getId()));</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return ResponseEntity.ok(objects);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/user/{id}/remarks&quot;)
+&nbsp;    @ResponseBody
+&nbsp;    public ResponseEntity&lt;List&lt;Remark&gt;&gt; getRemarksById(@PathVariable(&quot;id&quot;) Integer id) {
+<b class="fc">&nbsp;        List&lt;Remark&gt; remark = userService.SelectRemarksById(id);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(remark);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/user/{id}/follows&quot;)
+&nbsp;    @ResponseBody
+&nbsp;    public ResponseEntity&lt;List&lt;Topic&gt;&gt; getFollows(@PathVariable(&quot;id&quot;) Integer id) {
+<b class="fc">&nbsp;        List&lt;Topic&gt; follow = userService.SelectFollows(id);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(follow);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(&quot;/user/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;User&gt; updateUser(@PathVariable(&quot;id&quot;) Integer id, @RequestBody User user) {
+<b class="fc">&nbsp;        User updatedUser = userService.updateUser(id, user);</b>
+&nbsp;//        updatedUser.setPassword(&quot;&quot;);
+<b class="fc">&nbsp;        if (updatedUser == null) {</b>
+<b class="fc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return ResponseEntity.ok(updatedUser);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(&quot;/psd/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;User&gt; updatePsd(@PathVariable(&quot;id&quot;) Integer id, @RequestBody User user) {
+<b class="fc">&nbsp;        User updatedPsdUser = userService.updatePsd(id, user);</b>
+&nbsp;//        暂时直接返回
+&nbsp;//        updatedPsdUser.setPassword(&quot;&quot;);
+<b class="fc">&nbsp;        return ResponseEntity.ok(updatedPsdUser);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/user/object/{id}/nameAndTopic&quot;)
+&nbsp;    @ResponseBody
+&nbsp;    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; getObjectNameAndTopicNameById(@PathVariable(&quot;id&quot;) Integer id) {
+<b class="fc">&nbsp;        Map&lt;String, String&gt; result = userService.getObjectNameAndTopicNameById(id);</b>
+<b class="fc">&nbsp;        if (result == null || result.isEmpty()) {</b>
+<b class="fc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return ResponseEntity.ok(result);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;user/search/{keyword}&quot;)
+&nbsp;    public List&lt;User&gt; getMethodName(@PathVariable(&quot;keyword&quot;) String keyword) {
+<b class="fc">&nbsp;        return userService.search(keyword);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;user/ban/{id}&quot;)
+&nbsp;    public RetType ban(@PathVariable(&quot;id&quot;) Integer id) {
+<b class="fc">&nbsp;        return userService.banUser(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-04 13:52</div>
+</div>
+</body>
+</html>

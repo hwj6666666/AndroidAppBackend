@@ -1,0 +1,145 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > ClassController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.example.jiaoji.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: ClassController (org.example.jiaoji.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ClassController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.example.jiaoji.controller;
+&nbsp;
+&nbsp;import org.springframework.web.bind.annotation.RestController;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.web.bind.annotation.CrossOrigin;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.springframework.web.bind.annotation.PostMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestParam;
+&nbsp;import org.example.jiaoji.pojo.Class;
+&nbsp;import org.example.jiaoji.pojo.RetType;
+&nbsp;import org.example.jiaoji.service.ClassService;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@CrossOrigin
+<b class="fc">&nbsp;public class ClassController {</b>
+&nbsp;    @Autowired
+&nbsp;    private ClassService classService;
+&nbsp;
+&nbsp;    @GetMapping(&quot;/class&quot;)
+&nbsp;    public List&lt;Class&gt; getMethodName() {
+<b class="fc">&nbsp;        return classService.selectAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/class/addFavor&quot;)
+&nbsp;    public RetType getMethodName2(@RequestParam Integer classId, @RequestParam Integer userId) {
+<b class="fc">&nbsp;        return classService.addFavor(classId, userId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/class/deleteFavor&quot;)
+&nbsp;    public RetType getMethodName3(@RequestParam Integer classId, @RequestParam Integer userId) {
+<b class="fc">&nbsp;        return classService.deleteFavor(classId, userId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/class/favor&quot;)
+&nbsp;    public List&lt;Integer&gt; getMethodName4(@RequestParam Integer userId) {
+<b class="fc">&nbsp;        return classService.selectFavor(userId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-04 13:52</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,197 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > TopicController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.example.jiaoji.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: TopicController (org.example.jiaoji.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TopicController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (15/15)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.example.jiaoji.controller;
+&nbsp;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.ResponseBody;
+&nbsp;
+&nbsp;import com.github.pagehelper.PageInfo;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;import org.example.jiaoji.pojo.RetType;
+&nbsp;import org.example.jiaoji.pojo.Topic;
+&nbsp;import org.example.jiaoji.service.TopicService;
+&nbsp;import org.springframework.web.bind.annotation.RequestBody;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@CrossOrigin
+<b class="fc">&nbsp;public class TopicController {</b>
+&nbsp;    @Autowired
+&nbsp;    private TopicService topicService;
+&nbsp;
+&nbsp;    @GetMapping(&quot;/topic/{id}&quot;)
+&nbsp;    @ResponseBody
+&nbsp;    public ResponseEntity&lt;PageInfo&lt;Topic&gt;&gt; getTopic(@PathVariable(&quot;id&quot;) Integer id, @RequestParam Integer pageIndex,
+&nbsp;            @RequestParam Integer pageSize, @RequestParam String type) {
+<b class="fc">&nbsp;        PageInfo&lt;Topic&gt; topic = null;</b>
+<b class="fc">&nbsp;        if (id == 0) {</b>
+<b class="fc">&nbsp;            topic = topicService.SelectAll(pageSize, pageIndex, type);</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            topic = topicService.SelectByClassId(id, pageSize, pageIndex, type);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return ResponseEntity.ok(topic);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/topic/object/{id}&quot;)
+&nbsp;    @ResponseBody
+&nbsp;    public ResponseEntity&lt;Topic&gt; getOneTopic(@PathVariable(&quot;id&quot;) Integer id) {
+<b class="fc">&nbsp;        Topic topic = topicService.SelectById(id);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(topic);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/topic&quot;)
+&nbsp;    public RetType insert(@RequestBody Topic test) {
+<b class="fc">&nbsp;        return topicService.insertTopic(test);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/topic/search/{keyword}&quot;)
+&nbsp;    @ResponseBody
+&nbsp;    public ResponseEntity&lt;PageInfo&lt;Topic&gt;&gt; search(@PathVariable(&quot;keyword&quot;) String keyword,
+&nbsp;            @RequestParam Integer pageIndex,
+&nbsp;            @RequestParam Integer pageSize) {
+<b class="fc">&nbsp;        PageInfo&lt;Topic&gt; topic = topicService.search(keyword, pageSize, pageIndex);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(topic);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/topic/follow&quot;)
+&nbsp;    @ResponseBody
+&nbsp;    public RetType follow(@RequestParam Integer userId, @RequestParam Integer topicId) {
+<b class="fc">&nbsp;        return topicService.setFollow(topicId, userId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/topic/follow&quot;)
+&nbsp;    @ResponseBody
+&nbsp;    public boolean unfollow(@RequestParam Integer userId, @RequestParam Integer topicId) {
+<b class="fc">&nbsp;        return topicService.findFollow(topicId, userId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @DeleteMapping(&quot;/topic/{id}&quot;)
+&nbsp;    @ResponseBody
+&nbsp;    public RetType delete(@PathVariable(&quot;id&quot;) Integer id) {
+<b class="fc">&nbsp;        return topicService.deleteTopic(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/topic/hot&quot;)
+&nbsp;    @ResponseBody
+&nbsp;    public List&lt;Topic&gt; hotTopic() {
+<b class="fc">&nbsp;        return topicService.hotTopic();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-04 13:52</div>
+</div>
+</body>
+</html>

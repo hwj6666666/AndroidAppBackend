@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/../databaseSQL/chat.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/../databaseSQL/chat_item.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/../databaseSQL/class.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/../databaseSQL/comments.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/../databaseSQL/follow.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/../databaseSQL/object.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/../databaseSQL/remarks.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/../databaseSQL/rmk_likes.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/../databaseSQL/topic.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/../databaseSQL/user.sql" dialect="MySQL" />
+  </component>
+</project>

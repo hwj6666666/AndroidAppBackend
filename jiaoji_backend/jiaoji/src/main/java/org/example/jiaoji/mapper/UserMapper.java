@@ -40,7 +40,7 @@ public interface UserMapper {
     @Select("select id from user where email = #{email}")
     public Integer selectIdByEmail(String email);
 
-    @Select("select id from user where email = #{email} and password = #{password}")
+    @Select("select uid from password where email = #{email} and password = #{password}")
     public Integer selectIdByEmailAndPassword(String email, String password);
 
     @Select("select * from remarks where object_id = #{object_id}")

@@ -1,7 +1,7 @@
-package org.example.jiaoji.Mail.Controller;
+package org.example.jiaoji.controller;
 
-import org.example.jiaoji.Mail.Model.MailStructure;
-import org.example.jiaoji.Mail.Service.MailService;
+import org.example.jiaoji.pojo.MailStructure;
+import org.example.jiaoji.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

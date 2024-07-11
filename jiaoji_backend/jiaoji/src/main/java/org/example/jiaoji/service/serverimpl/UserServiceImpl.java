@@ -71,7 +71,8 @@ public class UserServiceImpl implements UserService {
     userMapper.insert(email, avatar, username);
     id = userMapper.selectIdByEmail(email);
     String salt=PasswordEncoder.generateRandomSalt();
-    userMapper.insertPassword(email,id,salt,PasswordEncoder.encode(password,salt));
+    String encodedPassword=PasswordEncoder.encode(password,salt);
+    userMapper.insertPassword(email,id,salt,encodedPassword);
 
     retType.setData(id);
     retType.setMsg("注册成功");

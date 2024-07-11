@@ -16,8 +16,10 @@ public class MailController {
   public String sendMail(@PathVariable String mail, @RequestBody MailStructure mailStructure) {
 
     System.out.println("Begin mailing!!");
-    mailService.sendMain(mail, mailStructure);
-    System.out.println("Mail Sent Successfully!!");
-    return "Mail Sent Successfully !!";
+    if (mailService.sendMain(mail, mailStructure)) {
+      System.out.println("Mail Sent Successfully!!");
+      return "Mail Sent Successfully !!";
+    }
+    return "Mail Sent Failed!!";
   }
 }

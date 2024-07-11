@@ -32,15 +32,18 @@ public class MyCustomRealm extends AuthorizingRealm {
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+        System.out.println("token验证启动");
         String accessToken = (String) token.getPrincipal();
         if (!JWTUtil.verify(accessToken,"MyConstant.JWT_SIGN_KEY".getBytes(StandardCharsets.UTF_8)))
             throw new IncorrectCredentialsException("token失效，请重新登录");
 
+        System.out.println("token验证为有效");
         String email = (String) JWTUtil.parseToken(accessToken).getPayload("email");
         Integer userId = userMapper.selectIdByEmail(email);
         if (userId == null)
             throw new UnknownAccountException("用户不存在!");
         User user=userMapper.selectByUserId(userId);
+        System.out.println("用户id为" + userId);
 
         return new SimpleAuthenticationInfo(user, accessToken, this.getName());
     }

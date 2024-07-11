@@ -1,8 +1,8 @@
 package org.example.jiaoji.security;
 
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.servlet.Filter;
@@ -20,21 +20,28 @@ public class ShiroConfig {
         return new MyCustomRealm();
     }
 
-    @Bean
+    @Bean("securityManager")
     public SecurityManager securityManager() {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         securityManager.setRealm(myCustomRealm());
         return securityManager;
     }
 
-    @Bean
+    @Bean("shiroFilter")
     public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager) {
         ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
         shiroFilter.setSecurityManager(securityManager);
 
+        Map<String, Filter> customFilters = new LinkedHashMap<>();
+        customFilters.put("jwt", new JWTFilter());
+        shiroFilter.setFilters(customFilters);
+
         Map<String, String> filterMap = new LinkedHashMap<>();
-        filterMap.put("/user/**", "anon");
+        filterMap.put("/user/login", "anon");
+        filterMap.put("/mail/**", "anon");
+        filterMap.put("/user/register", "anon");
         filterMap.put("/**", "auth");
+
         shiroFilter.setFilterChainDefinitionMap(filterMap);
         return shiroFilter;
     }
@@ -46,4 +53,11 @@ public class ShiroConfig {
         advisor.setSecurityManager(securityManager);
         return advisor;
     }
+
+    //负责shiro的生命周期
+    @Bean("lifecycleBeanPostProcessor")
+    public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
+        return new LifecycleBeanPostProcessor();
+    }
+
 }

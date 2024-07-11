@@ -56,7 +56,7 @@ public interface UserMapper {
     @Update("insert into user(email,avatar,username) values(#{email},#{avatar},#{username})")
     public void insert(String email, String avatar,String username);
 
-    @Update("insert into password(email, uid, salt, password) values(#{email},#{uid},#{salt},${username})")
+    @Update("insert into password(email, uid, salt, password) values(#{email},#{uid},#{salt},#{password})")
     public void insertPassword(String email, Integer uid, String salt, String password);
 
     @Select("select * from user where username like #{keyword} or email like #{keyword}")

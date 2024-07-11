@@ -1,4 +1,4 @@
-package org.example.jiaoji.Mail.Model;
+package org.example.jiaoji.pojo;
 
 import lombok.Getter;
 import lombok.Setter;

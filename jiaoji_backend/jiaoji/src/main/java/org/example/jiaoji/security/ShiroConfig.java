@@ -1,7 +1,6 @@
 package org.example.jiaoji.security;
 
 import org.apache.shiro.mgt.SecurityManager;
-import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.context.annotation.Bean;
@@ -13,21 +12,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Configuration
-public class ShiroConfig {
+public class ShiroConfig{
 
     @Bean
-    public MyCustomRealm myCustomRealm() {
-        return new MyCustomRealm();
-    }
-
-    @Bean("securityManager")
-    public SecurityManager securityManager() {
-        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-        securityManager.setRealm(myCustomRealm());
-        return securityManager;
-    }
-
-    @Bean("shiroFilter")
     public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager) {
         ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
         shiroFilter.setSecurityManager(securityManager);
@@ -53,8 +40,15 @@ public class ShiroConfig {
         return advisor;
     }
 
-    @Bean("lifecycleBeanPostProcessor")
-    public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
-        return new LifecycleBeanPostProcessor();
+    @Bean
+    public SecurityManager securityManager() {
+        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+        securityManager.setRealm(myCustomRealm());
+        return securityManager;
+    }
+
+    @Bean
+    public MyCustomRealm myCustomRealm() {
+        return new MyCustomRealm();
     }
 }

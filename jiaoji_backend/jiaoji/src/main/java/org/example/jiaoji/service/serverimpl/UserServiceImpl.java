@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import org.example.jiaoji.mapper.UserMapper;
 import org.example.jiaoji.pojo.*;
+import org.example.jiaoji.security.PasswordEncoder;
 import org.example.jiaoji.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -67,8 +68,11 @@ public class UserServiceImpl implements UserService {
       return retType;
     }
 
-    userMapper.insert(email, password, avatar,username);
+    userMapper.insert(email, avatar, username);
     id = userMapper.selectIdByEmail(email);
+    String salt=PasswordEncoder.generateRandomSalt();
+    userMapper.insertPassword(email,id,salt,PasswordEncoder.encode(password,salt));
+
     retType.setData(id);
     retType.setMsg("注册成功");
     retType.setOk(true);
@@ -84,6 +88,7 @@ public class UserServiceImpl implements UserService {
       retType.setOk(false);
       return retType;
     }
+    password= PasswordEncoder.encode(password,userMapper.selectSaltByUid(id));
     id = userMapper.selectIdByEmailAndPassword(email, password);
     if (id == null) {
       retType.setData(null);

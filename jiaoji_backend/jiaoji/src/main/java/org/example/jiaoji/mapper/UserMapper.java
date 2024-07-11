@@ -35,9 +35,6 @@ public interface UserMapper {
     @Update("update user set username=#{username}, note=#{note}, avatar=#{avatar} where id=#{id}")
     void update(User user);
 
-    @Update("update user set password=#{password} where id=#{id}")
-    void updateUserPsd(User user);
-
     @Select("SELECT o.title as objectName, t.title as topicName FROM object o JOIN topic t ON o.topic_id = t.id WHERE o.id = #{objectId}")
     Map<String, String> selectObjectNameAndTopicNameById(Integer objectId);
 
@@ -50,7 +47,7 @@ public interface UserMapper {
     @Select("select * from remarks where object_id = #{object_id}")
     public List<Remark> selectAllRemarks(Integer object_id);
 
-    @Update("update user set password = #{password} where id = #{id}")
+    @Update("update password set password = #{password} where uid = #{id}")
     public void resetPassword(Integer id, String password);
 
     @Update("insert into user(email,avatar,username) values(#{email},#{avatar},#{username})")

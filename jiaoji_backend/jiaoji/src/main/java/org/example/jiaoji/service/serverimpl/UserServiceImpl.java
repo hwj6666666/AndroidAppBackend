@@ -47,8 +47,8 @@ public class UserServiceImpl implements UserService {
 
 
   public User updatePsd(Integer id, User user) {
-    user.setId(id);
-    userMapper.updateUserPsd(user);
+    User this_user=userMapper.selectByUserId(id);
+    reset(this_user.getEmail(), user.getPassword());
     return userMapper.selectByUserId(id);
   }
 
@@ -162,7 +162,9 @@ public class UserServiceImpl implements UserService {
       retType.setMsg("邮箱未注册");
       return retType;
     }
-    userMapper.resetPassword(id, password);
+    String salt=userMapper.selectSaltByUid(id);
+    String encodedPassword=PasswordEncoder.encode(password,salt);
+    userMapper.resetPassword(id, encodedPassword);
     retType.setOk(true);
     retType.setMsg("重置密码成功");
     return retType;

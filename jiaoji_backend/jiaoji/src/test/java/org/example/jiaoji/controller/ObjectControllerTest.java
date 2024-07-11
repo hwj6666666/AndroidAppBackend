@@ -49,7 +49,7 @@ class ObjectControllerTest {
         mockObjects.add(item1);
         when(objectService.SelectAllInTopic(anyInt())).thenReturn(mockObjects);
         when(objectService.getAveScore(anyInt())).thenReturn(4.5);
-        when(objectService.getHottestRemark(anyInt())).thenReturn("Hot Remark");
+//        when(objectService.getHottestRemark(anyInt())).thenReturn("Hot Remark");
 
         ResponseEntity<List<Objects>> response = objectController.getObject(1);
         assertEquals(mockObjects, response.getBody());
@@ -82,7 +82,7 @@ class ObjectControllerTest {
         mockObjects.add(item1);
         when(objectService.SelectById(anyInt())).thenReturn(mockObjects);
         when(objectService.getAveScore(anyInt())).thenReturn(4.5);
-        when(objectService.getHottestRemark(anyInt())).thenReturn("Hot Remark");
+//        when(objectService.getHottestRemark(anyInt())).thenReturn("Hot Remark");
 
         ResponseEntity<List<Objects>> response = objectController.getObjectById(1);
         assertEquals(mockObjects, response.getBody());

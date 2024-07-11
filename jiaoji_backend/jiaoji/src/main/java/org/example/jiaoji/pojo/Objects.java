@@ -13,9 +13,11 @@ public class Objects {
     private Integer id;
     private Integer topicId;
     private Integer userId;
+    private Integer remarkNum;
     private String title;
     private String description;
     private String picture;
     private String hottestRemark;
     private double aveScore;
+    private Integer remarkId;
 }

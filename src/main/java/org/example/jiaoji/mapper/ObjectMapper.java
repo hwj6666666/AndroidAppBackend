@@ -38,10 +38,4 @@ public interface ObjectMapper {
 
     @Select("select id,title from object where topic_id = #{topicId} order by id desc limit 3")
     public List<top3Object> selectTop3(Integer topicId);
-
-    @Update("update object set remark_num = #{new_remark_num}, aveScore = #{score} where id = #{id}")
-    public void updateAveScore(double score, Integer new_remark_num, Integer id);
-
-    @Update("update object set hottestRemark = #{hot_comment}, remark_id = #{remark_id} where id = #{id}")
-    public void updateHotComment(Integer id, String hot_comment, Integer remark_id);
 }

@@ -32,14 +32,16 @@ public class ObjectController {
     @GetMapping("/object/{id}")
     @ResponseBody
     public ResponseEntity<List<Objects>> getObject(@PathVariable("id") Integer id) {
+        
         List<Objects> objects;
         topicService.addViews(id);
         String key = "getObjectbyTopicId:" + id;
         if (stringRedisTemplate.opsForValue().get(key) == null) {
         objects = objectService.SelectAllInTopic(id);
-//        for (Objects object : objects) {
-//            object.setHottestRemark(objectService.getHottestRemark(object.getId()));
-//        }
+        for (Objects object : objects) {
+            object.setAveScore(objectService.getAveScore(object.getId()));
+            object.setHottestRemark(objectService.getHottestRemark(object.getId()));
+        }
         String json = JSON.toJSONString(objects);
         stringRedisTemplate.opsForValue().set(key, json, 10, java.util.concurrent.TimeUnit.SECONDS);
         return ResponseEntity.ok(objects);
@@ -52,7 +54,6 @@ public class ObjectController {
 
     @PostMapping("/object")
     public Integer insert(@RequestBody Objects object) {
-
         return objectService.InsertObject(object);
     }
 
@@ -63,9 +64,10 @@ public class ObjectController {
             if (stringRedisTemplate.opsForValue().get(key) == null) {
         List<Objects> objects;
         objects = objectService.SelectById(id);
-//        for (Objects object : objects) {
-//            object.setHottestRemark(objectService.getHottestRemark(object.getId()));
-//        }
+        for (Objects object : objects) {
+            object.setAveScore(objectService.getAveScore(object.getId()));
+            object.setHottestRemark(objectService.getHottestRemark(object.getId()));
+        }
         String json = JSON.toJSONString(objects);
         stringRedisTemplate.opsForValue().set(key, json, 3600, java.util.concurrent.TimeUnit.SECONDS);
         return ResponseEntity.ok(objects);
@@ -82,10 +84,10 @@ public class ObjectController {
     public List<Objects> getObjectsByTopicId(@PathVariable("keyword") String keyword) {
         List<Objects> objects;
         objects =objectService.search(keyword);
-//        for (Objects object : objects) {
-//            object.setAveScore(objectService.getAveScore(object.getId()));
-//            object.setHottestRemark(objectService.getHottestRemark(object.getId()).getContent());
-//        }
+        for (Objects object : objects) {
+            object.setAveScore(objectService.getAveScore(object.getId()));
+            object.setHottestRemark(objectService.getHottestRemark(object.getId()));
+        }
         return objects;
     }
     @GetMapping("/object/top3/{topicId}")

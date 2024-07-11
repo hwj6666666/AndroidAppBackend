@@ -50,7 +50,7 @@ public class UserController {
         List<Objects> objects = userService.SelectObjectsById(id);
         for (Objects object : objects) {
             object.setAveScore(objectService.getAveScore(object.getId()));
-            object.setHottestRemark(objectService.getHottestRemark(object.getId()).getContent());
+            object.setHottestRemark(objectService.getHottestRemark(object.getId()));
         }
         return ResponseEntity.ok(objects);
     }

@@ -168,7 +168,7 @@ class ObjectServiceImplTest {
 
         when(objectMapper.selectAllRemarks(anyInt())).thenReturn(remarks);
 
-        String result = objectService.getHottestRemark(1).getContent();
+        String result = objectService.getHottestRemark(1);
 
         assertEquals("Remark 2", result);
         verify(objectMapper, times(1)).selectAllRemarks(anyInt());

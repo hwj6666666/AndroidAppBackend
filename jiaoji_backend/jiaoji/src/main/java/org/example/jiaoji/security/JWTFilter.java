@@ -4,12 +4,16 @@ import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 
 public class JWTFilter extends BasicHttpAuthenticationFilter {
 
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
+        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+        String token = httpServletRequest.getHeader("Authorization");
+        if (token == null || token.isEmpty()) {
+            return false; // If token is missing, deny access
+        }
         try {
             executeLogin(request, response);
             return true;

@@ -1,6 +1,11 @@
 package org.example.jiaoji.controller;
 
 import cn.hutool.jwt.JWT;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
 import org.example.jiaoji.pojo.RetType;
 import org.example.jiaoji.pojo.User;
 import org.example.jiaoji.service.UserService;
@@ -24,13 +29,23 @@ public class LoginController {
     public RetType postMethodName(@RequestBody User user) {
         System.out.println("login");
         System.out.println(user);
-        System.out.println(userService.Login(user.getEmail(), user.getPassword()));
-        RetType res = userService.Login(user.getEmail(), user.getPassword());
-        if (res.isOk()) {
+        RetType res = new RetType();
+        res.setData(null);
+
+        Subject subject= SecurityUtils.getSubject();
+        AuthenticationToken shiroToken = new UsernamePasswordToken(user.getEmail(), user.getPassword());
+        try {
+            subject.login(shiroToken);
+
             String token = JWT.create().setPayload("email", user.getEmail()).
                     setExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
                     .setKey("MyConstant.JWT_SIGN_KEY".getBytes(StandardCharsets.UTF_8)).sign();
+
             res.setMsg(token);
+            res.setOk(true);
+        } catch (AuthenticationException e) {
+            res.setOk(false);
+            res.setMsg(e.getMessage());
         }
         return res;
     }

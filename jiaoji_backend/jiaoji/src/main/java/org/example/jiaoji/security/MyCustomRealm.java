@@ -6,42 +6,43 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.example.jiaoji.mapper.UserMapper;
-import org.example.jiaoji.pojo.RetType;
 import org.example.jiaoji.pojo.User;
-import org.example.jiaoji.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import cn.hutool.jwt.JWTUtil;
-
-import java.nio.charset.StandardCharsets;
 
 @Component
 public class MyCustomRealm extends AuthorizingRealm {
     @Autowired
-    private UserService userService;
+    private UserMapper userMapper;
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        System.out.println("授权，启动！");
-        String username = (String) principals.getPrimaryPrincipal();
+        System.out.println("授权启动");
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
-
-        //我们的项目中，所有用户的权限都是一致的，所以只象征性的设置user类型与read权限
         authorizationInfo.addRole("user");
-        authorizationInfo.addStringPermission("read");
 
         return authorizationInfo;
     }
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-        System.out.println("token验证启动");
-        String email = token.getPrincipal().toString();
-        String password = token.getCredentials().toString();
+        UsernamePasswordToken usernamePasswordToken = (UsernamePasswordToken) token;
+        String email = usernamePasswordToken.getUsername();
+        String password = new String(usernamePasswordToken.getPassword());
 
-        RetType res=userService.Login(email, password);
-        if (res.isOk())
-            return new SimpleAuthenticationInfo(token.getPrincipal(), token.getCredentials(), getName());
-        else throw new IncorrectCredentialsException("密码错误");
+        Integer uid = userMapper.selectIdByEmail(email);
+        if (uid == null)
+            throw new UnknownAccountException("邮箱未注册");
+
+        String encodedPassword = PasswordEncoder.encode(password, userMapper.selectSaltByUid(uid));
+        uid = userMapper.selectIdByEmailAndPassword(email, encodedPassword);
+        if (uid == null)
+            throw new IncorrectCredentialsException("密码错误");
+
+        User user = userMapper.selectByUserId(uid);
+        if (user.getState() == 2)
+            throw new LockedAccountException("用户已被封禁");
+
+        return new SimpleAuthenticationInfo(token.getPrincipal(), token.getCredentials(), getName());
     }
 }

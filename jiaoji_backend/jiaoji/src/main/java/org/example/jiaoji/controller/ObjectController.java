@@ -40,6 +40,7 @@ public class ObjectController {
 //        for (Objects object : objects) {
 //            object.setHottestRemark(objectService.getHottestRemark(object.getId()));
 //        }
+// test
         String json = JSON.toJSONString(objects);
         stringRedisTemplate.opsForValue().set(key, json, 10, java.util.concurrent.TimeUnit.SECONDS);
         return ResponseEntity.ok(objects);

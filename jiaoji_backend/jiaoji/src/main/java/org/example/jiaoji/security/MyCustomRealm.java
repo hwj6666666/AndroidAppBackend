@@ -6,7 +6,9 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.example.jiaoji.mapper.UserMapper;
+import org.example.jiaoji.pojo.RetType;
 import org.example.jiaoji.pojo.User;
+import org.example.jiaoji.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import cn.hutool.jwt.JWTUtil;
@@ -16,7 +18,7 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class MyCustomRealm extends AuthorizingRealm {
     @Autowired
-    private UserMapper userMapper;
+    private UserService userService;
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
@@ -34,18 +36,12 @@ public class MyCustomRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         System.out.println("token验证启动");
-        String accessToken = (String) token.getPrincipal();
-        if (!JWTUtil.verify(accessToken,"MyConstant.JWT_SIGN_KEY".getBytes(StandardCharsets.UTF_8)))
-            throw new IncorrectCredentialsException("token失效，请重新登录");
+        String email = token.getPrincipal().toString();
+        String password = token.getCredentials().toString();
 
-        System.out.println("token验证为有效");
-        String email = (String) JWTUtil.parseToken(accessToken).getPayload("email");
-        Integer userId = userMapper.selectIdByEmail(email);
-        if (userId == null)
-            throw new UnknownAccountException("用户不存在!");
-        User user=userMapper.selectByUserId(userId);
-        System.out.println("用户id为" + userId);
-
-        return new SimpleAuthenticationInfo(user, accessToken, this.getName());
+        RetType res=userService.Login(email, password);
+        if (res.isOk())
+            return new SimpleAuthenticationInfo(token.getPrincipal(), token.getCredentials(), getName());
+        else throw new IncorrectCredentialsException("密码错误");
     }
 }

@@ -33,6 +33,7 @@ public class ShiroConfig{
         filterMap.put("/**", "jwt");
 
         shiroFilter.setFilterChainDefinitionMap(filterMap);
+        shiroFilter.setLoginUrl("/user/login");
         return shiroFilter;
     }
 
@@ -52,7 +53,7 @@ public class ShiroConfig{
         return securityManager;
     }
 
-    @Bean(name = "myCustomRealm")
+    @Bean("myCustomRealm")
     @DependsOn("lifecycleBeanPostProcessor")
     public MyCustomRealm myCustomRealm() {
         return new MyCustomRealm();

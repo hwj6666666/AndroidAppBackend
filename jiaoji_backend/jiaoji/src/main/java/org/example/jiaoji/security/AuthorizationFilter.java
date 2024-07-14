@@ -12,16 +12,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 @WebFilter(urlPatterns = "/*")
-public class AuthorizationFilter implements Filter {
+public class AuthorizationFilter implements Filter, jakarta.servlet.Filter {
     private static final byte[] SECRET_KEY = "MyConstant.JWT_SIGN_KEY".getBytes(StandardCharsets.UTF_8);
     private static final Set<String> EXCLUDED_PATHS = new HashSet<>();
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        // Add paths to be excluded from filtering
+        Filter.super.init(filterConfig);
         EXCLUDED_PATHS.add("login");
         EXCLUDED_PATHS.add("register");
-        // Add more paths as needed
+        System.out.println("filter initialized");
     }
 
     @Override
@@ -31,7 +31,6 @@ public class AuthorizationFilter implements Filter {
 
         String requestURI = request.getRequestURI();
 
-        // Debug: Log the request URI and check if it is excluded
         System.out.println("Request URI: " + requestURI);
         System.out.println("Is excluded: " + isExcluded(requestURI));
 
@@ -39,7 +38,7 @@ public class AuthorizationFilter implements Filter {
             filterChain.doFilter(servletRequest, servletResponse);
         } else {
             String token = request.getHeader("Authorization");
-            // Debug: Log the token presence and verification result
+
             System.out.println("Token: " + token);
             if (token != null && JWTUtil.verify(token, SECRET_KEY)) {
                 System.out.println("Token verified successfully");
@@ -59,6 +58,7 @@ public class AuthorizationFilter implements Filter {
 
     @Override
     public void destroy() {
-        // Filter destruction if needed
+        Filter.super.destroy();
+        System.out.println("filter destroyed");
     }
 }

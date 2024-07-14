@@ -21,9 +21,11 @@ public class MailService {
     @Value("${spring.mail.username}")
     private String fromMail;
 
-    public Boolean sendMain(String mail, MailStructure mailStructure) {
-        Integer id = userMapper.selectIdByEmail(mail);
-        if (id != null) return false;
+    public Boolean sendMain(String mail, MailStructure mailStructure, boolean isRegister) {
+        if (isRegister) {
+            Integer id = userMapper.selectIdByEmail(mail);
+            if (id != null) return false;
+        }
 
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setFrom(fromMail);

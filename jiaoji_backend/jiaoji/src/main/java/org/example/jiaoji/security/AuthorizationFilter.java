@@ -2,25 +2,36 @@ package org.example.jiaoji.security;
 
 import cn.hutool.jwt.JWTUtil;
 
-import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 
 @WebFilter(urlPatterns = "/*")
-public class AuthorizationFilter implements Filter, jakarta.servlet.Filter {
+public class AuthorizationFilter implements Filter {
     private static final byte[] SECRET_KEY = "MyConstant.JWT_SIGN_KEY".getBytes(StandardCharsets.UTF_8);
     private static final Set<String> EXCLUDED_PATHS = new HashSet<>();
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        Filter.super.init(filterConfig);
-        EXCLUDED_PATHS.add("login");
-        EXCLUDED_PATHS.add("register");
+        EXCLUDED_PATHS.add("/user/login");
+        EXCLUDED_PATHS.add("/user/name");
+        EXCLUDED_PATHS.add("/user/register");
+        EXCLUDED_PATHS.add("/user/reset");
+        EXCLUDED_PATHS.add("/mail");
+        EXCLUDED_PATHS.add("/send");
+        EXCLUDED_PATHS.add("/class");
+        EXCLUDED_PATHS.add("/topic");
+        EXCLUDED_PATHS.add("/object");
         System.out.println("filter initialized");
     }
 
@@ -40,6 +51,15 @@ public class AuthorizationFilter implements Filter, jakarta.servlet.Filter {
             String token = request.getHeader("Authorization");
 
             System.out.println("Token: " + token);
+            if (!token.startsWith("woshinengdie:_")) {
+                System.out.println("Not Jiao Ji token!");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Not Jiao Ji token!");
+                return;
+            }
+            token=token.replaceFirst("woshinengdie:_", "");
+
+            System.out.println("Jiao Ji token: " + token);
             if (token != null && JWTUtil.verify(token, SECRET_KEY)) {
                 System.out.println("Token verified successfully");
                 filterChain.doFilter(servletRequest, servletResponse);
@@ -52,13 +72,11 @@ public class AuthorizationFilter implements Filter, jakarta.servlet.Filter {
     }
 
     private boolean isExcluded(String path) {
-        // Check for exact match or if the path starts with any of the excluded paths
         return EXCLUDED_PATHS.stream().anyMatch(path::startsWith);
     }
 
     @Override
     public void destroy() {
-        Filter.super.destroy();
-        System.out.println("filter destroyed");
+        System.out.println("Filter destroyed");
     }
 }

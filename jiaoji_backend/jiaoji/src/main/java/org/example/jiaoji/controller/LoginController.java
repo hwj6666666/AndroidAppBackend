@@ -6,6 +6,7 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
+import org.example.jiaoji.mapper.UserMapper;
 import org.example.jiaoji.pojo.RetType;
 import org.example.jiaoji.pojo.User;
 import org.example.jiaoji.service.UserService;
@@ -25,6 +26,9 @@ public class LoginController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @PostMapping("/user/login")
     public RetType postMethodName(@RequestBody User user) {
         System.out.println("login");
@@ -43,6 +47,7 @@ public class LoginController {
 
             res.setMsg(token);
             res.setOk(true);
+            res.setData(userMapper.selectIdByEmail(user.getEmail()));
         } catch (AuthenticationException e) {
             res.setOk(false);
             res.setMsg(e.getMessage());

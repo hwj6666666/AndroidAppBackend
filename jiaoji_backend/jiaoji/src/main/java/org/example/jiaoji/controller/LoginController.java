@@ -1,6 +1,7 @@
 package org.example.jiaoji.controller;
 
 import cn.hutool.jwt.JWT;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -30,20 +31,22 @@ public class LoginController {
     private UserMapper userMapper;
 
     @PostMapping("/user/login")
-    public RetType postMethodName(@RequestBody User user) {
+    public RetType postMethodName(@RequestBody User user, HttpServletRequest request) {
         System.out.println("login");
         System.out.println(user);
         RetType res = new RetType();
         res.setData(null);
 
-        Subject subject= SecurityUtils.getSubject();
+        Subject subject = SecurityUtils.getSubject();
         AuthenticationToken shiroToken = new UsernamePasswordToken(user.getEmail(), user.getPassword());
         try {
             subject.login(shiroToken);
 
+            String clientIp = request.getRemoteAddr();
             String token = JWT.create().setPayload("email", user.getEmail()).
-                    setExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
-                    .setKey("MyConstant.JWT_SIGN_KEY".getBytes(StandardCharsets.UTF_8)).sign();
+                    setPayload("ip",clientIp).
+                    setExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 3)).
+                    setKey("MyConstant.JWT_SIGN_KEY".getBytes(StandardCharsets.UTF_8)).sign();
 
             res.setMsg(token);
             res.setOk(true);

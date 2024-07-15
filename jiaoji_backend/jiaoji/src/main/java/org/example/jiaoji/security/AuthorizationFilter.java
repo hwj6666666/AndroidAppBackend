@@ -1,25 +1,34 @@
 package org.example.jiaoji.security;
 
+import cn.hutool.core.exceptions.ValidateException;
+import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTUtil;
 
+import cn.hutool.jwt.JWTValidator;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
-import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.jiaoji.mapper.UserMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 
-@WebFilter(urlPatterns = "/*")
+@Component
 public class AuthorizationFilter implements Filter {
     private static final byte[] SECRET_KEY = "MyConstant.JWT_SIGN_KEY".getBytes(StandardCharsets.UTF_8);
     private static final Set<String> EXCLUDED_PATHS = new HashSet<>();
+
+    @Autowired
+    UserMapper userMapper;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -48,25 +57,53 @@ public class AuthorizationFilter implements Filter {
         if (isExcluded(requestURI)) {
             filterChain.doFilter(servletRequest, servletResponse);
         } else {
-            String token = request.getHeader("Authorization");
+            String token;
+            if ((token = request.getHeader("Authorization")) == null) {
+                System.out.println("No token request!");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No token request!");
+                return;
+            }
 
             System.out.println("Token: " + token);
             if (!token.startsWith("woshinengdie:_")) {
                 System.out.println("Not Jiao Ji token!");
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("Not Jiao Ji token!");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Not Jiao Ji token!");
                 return;
             }
-            token=token.replaceFirst("woshinengdie:_", "");
 
+            token = token.replaceFirst("woshinengdie:_", "");
             System.out.println("Jiao Ji token: " + token);
-            if (token != null && JWTUtil.verify(token, SECRET_KEY)) {
+
+            if (JWTUtil.verify(token, SECRET_KEY)) {
+                JWTValidator validator = JWTValidator.of(JWTUtil.parseToken(token));
+                try {
+                    validator.validateDate();
+                } catch (ValidateException e) {
+                    System.out.println("Token should be updated!");
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token过期，请重新登录");
+                    return;
+                }
+
+                JWT parsedToken = JWTUtil.parseToken(token);
+
+                if (!parsedToken.getPayloads().getStr("ip").equals(request.getRemoteAddr())) {
+                    System.out.println("ip check failed!");
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "ip check failed!");
+                    return;
+                }
+
+                if (userMapper.selectIdByEmail(parsedToken.getPayloads().getStr("email")) == null) {
+                    System.out.println("email check failed!");
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "email check failed!");
+                    return;
+                }
+
                 System.out.println("Token verified successfully");
                 filterChain.doFilter(servletRequest, servletResponse);
             } else {
                 System.out.println("Unauthorized access");
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("Unauthorized");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "token验证失败");
+                return;
             }
         }
     }

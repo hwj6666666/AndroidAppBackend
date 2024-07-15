@@ -41,6 +41,7 @@ public class AuthorizationFilter implements Filter {
         EXCLUDED_PATHS.add("/class");
         EXCLUDED_PATHS.add("/topic");
         EXCLUDED_PATHS.add("/object");
+        EXCLUDED_PATHS.add("/refresh/token");
         System.out.println("filter initialized");
     }
 
@@ -52,7 +53,7 @@ public class AuthorizationFilter implements Filter {
         String requestURI = request.getRequestURI();
 
         System.out.println("Request URI: " + requestURI);
-        System.out.println("Is excluded: " + isExcluded(requestURI));
+//        System.out.println("Is excluded: " + isExcluded(requestURI));
 
         if (isExcluded(requestURI)) {
             filterChain.doFilter(servletRequest, servletResponse);
@@ -60,11 +61,10 @@ public class AuthorizationFilter implements Filter {
             String token;
             if ((token = request.getHeader("Authorization")) == null) {
                 System.out.println("No token request!");
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No token request!");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "请先登录获取token");
                 return;
             }
 
-            System.out.println("Token: " + token);
             if (!token.startsWith("woshinengdie:_")) {
                 System.out.println("Not Jiao Ji token!");
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Not Jiao Ji token!");
@@ -72,7 +72,6 @@ public class AuthorizationFilter implements Filter {
             }
 
             token = token.replaceFirst("woshinengdie:_", "");
-            System.out.println("Jiao Ji token: " + token);
 
             if (JWTUtil.verify(token, SECRET_KEY)) {
                 JWTValidator validator = JWTValidator.of(JWTUtil.parseToken(token));

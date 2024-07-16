@@ -85,5 +85,4 @@ public class RemarkController {
     public ResponseEntity<Boolean> getLike(@PathVariable("id") Integer id, @PathVariable("uid") Integer uid) {
         return ResponseEntity.ok(remarkService.isLike(id, uid));
     }
-
 }

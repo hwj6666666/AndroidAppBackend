@@ -7,6 +7,7 @@ import org.example.jiaoji.pojo.Remark;
 import org.example.jiaoji.pojo.User;
 import org.example.jiaoji.pojo.RetType;
 import org.example.jiaoji.pojo.Objects;
+import org.example.jiaoji.service.ObjectService;
 import org.example.jiaoji.service.RemarkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,8 @@ public class RemarkServiceImpl implements RemarkService {
     private TopicMapper topicMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private ObjectService objectService;
 
     @Override
     public Integer addRemark(Remark data) {
@@ -34,6 +37,7 @@ public class RemarkServiceImpl implements RemarkService {
         Objects object = objectsMapper.selectOneById(data.getObjectId());
         Topic topic = objectsMapper.selectTopicById(object.getTopicId());
         topicMapper.updateRemarkNum(topic.getRemarkNum() + 1, topic.getId());
+        objectService.updateAveScore(data.getObjectId(), data.getScore());
         ret.setMsg("上传成功");
         ret.setOk(true);
         ret.setData(null);
@@ -67,12 +71,16 @@ public class RemarkServiceImpl implements RemarkService {
             ret.setOk(true);
             ret.setData(null);
         }
+        Remark remark = remarkMapper.selectById(id).getFirst();
+        objectService.updateHotComment(remark.getObjectId(), remark.getId(), change);
         return ret;
     }
 
     @Override
     public RetType deleteRemark(Integer id) {
         RetType ret = new RetType();
+        List<Remark> remarks = remarkMapper.selectById(id);
+        if(!remarks.isEmpty()) objectService.decAveScore(remarks.get(0).getObjectId(), remarks.get(0).getScore());
         remarkMapper.delete(id);
         if (remarkMapper.selectById(id).isEmpty()) {
             ret.setMsg("删除成功");
@@ -114,6 +122,8 @@ public class RemarkServiceImpl implements RemarkService {
     @Override
     public RetType deleteUserObj(Integer objectId, Integer uid) {
         RetType ret=new RetType();
+        List<Remark> remarks = remarkMapper.selectByUser(uid, objectId);
+        if(!remarks.isEmpty()) objectService.decAveScore(remarks.get(0).getObjectId(), remarks.get(0).getScore());
         remarkMapper.deleteUserObj(uid, objectId);
         if (remarkMapper.selectByUser(uid, objectId).isEmpty()) {
             ret.setOk(true);

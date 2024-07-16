@@ -82,7 +82,7 @@ class UserControllerTest {
         String remark = new String("remark");
         when(userService.SelectObjectsById(anyInt())).thenReturn(mockObjects);
         when(objectService.getAveScore(anyInt())).thenReturn(5.0);
-        when(objectService.getHottestRemark(anyInt())).thenReturn(remark);
+//        when(objectService.getHottestRemark(anyInt())).thenReturn(remark);
 
         ResponseEntity<List<Objects>> response = userController.getObjectsById(1);
         assertEquals(mockObjects, response.getBody());

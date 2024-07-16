@@ -3,6 +3,7 @@ package org.example.jiaoji.service.serverimpl;
 import java.util.List;
 
 import org.example.jiaoji.mapper.ObjectMapper;
+import org.example.jiaoji.mapper.RemarkMapper;
 import org.example.jiaoji.mapper.TopicMapper;
 import org.example.jiaoji.pojo.Objects;
 import org.example.jiaoji.pojo.Remark;
@@ -10,6 +11,7 @@ import org.example.jiaoji.pojo.RetType;
 import org.example.jiaoji.pojo.Topic;
 import org.example.jiaoji.pojo.top3Object;
 import org.example.jiaoji.service.ObjectService;
+import org.example.jiaoji.service.RemarkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,8 @@ public class ObjectServiceImpl implements ObjectService {
     private ObjectMapper objectMapper;
     @Autowired
     private TopicMapper topicMapper;
+    @Autowired
+    private RemarkMapper remarkMapper;
 
     @Transactional
     public Integer InsertObject(Objects data) {
@@ -38,6 +42,10 @@ public class ObjectServiceImpl implements ObjectService {
         object.setDescription(data.getDescription());
         object.setUserId(data.getUserId());
         object.setPicture(data.getPicture());
+        object.setAveScore(0);
+        object.setRemarkNum(0);
+        object.setHottestRemark("");
+        object.setRemarkId(0);
 
         object.setTopicId(data.getTopicId());
         Topic topic = objectMapper.selectTopicById(object.getTopicId());
@@ -76,17 +84,17 @@ public class ObjectServiceImpl implements ObjectService {
         return scores / length;
     }
 
-    public String getHottestRemark(Integer id) {
+    public Remark getHottestRemark(Integer id) {
         List<Remark> remarks = objectMapper.selectAllRemarks(id);
         Integer likes = 0;
-        String hottestRemark = "";
+        Remark remark1 = null;
         for (Remark remark : remarks) {
             if (remark.getLike() > likes) {
                 likes = remark.getLike();
-                hottestRemark = remark.getContent();
+                remark1 = remark;
             }
         }
-        return hottestRemark;
+        return remark1;
     }
 
     public List<Objects> search(String keyword) {
@@ -114,4 +122,40 @@ public class ObjectServiceImpl implements ObjectService {
         return ret;
     }
 
+    public void updateAveScore(Integer id, Integer score) {
+        Objects object = objectMapper.selectOneById(id);
+        Integer remarkNum = object.getRemarkNum();
+        double newScore = (object.getAveScore() * remarkNum + score)/(remarkNum + 1);
+        objectMapper.updateAveScore(newScore, remarkNum + 1, id);
+    }
+
+    public void decAveScore(Integer id, Integer score) {
+        Objects object = objectMapper.selectOneById(id);
+        Integer remarkNum = object.getRemarkNum();
+        double newScore = (object.getAveScore() * remarkNum - score)/(remarkNum - 1);
+        objectMapper.updateAveScore(newScore, remarkNum - 1, id);
+    }
+
+    public void updateHotComment(Integer id, Integer remark_id, Integer change) {
+        Objects object = objectMapper.selectOneById(id);
+        Integer old_remark_id = object.getRemarkId();
+        if(old_remark_id.equals(0)){
+            Remark remark =remarkMapper.selectById(remark_id).getFirst();
+            objectMapper.updateHotComment(id, remark.getContent(), remark_id);
+            return;
+        }
+        if(old_remark_id.equals(remark_id)) {
+            if(change < 0){
+                Remark remark = getHottestRemark(id);
+                if(remark != null) objectMapper.updateHotComment(object.getId(), remark.getContent(), remark.getId());
+                else objectMapper.updateHotComment(id, "", 0);
+            }
+        }else{
+            Remark old_remark = remarkMapper.selectById(old_remark_id).getFirst();
+            Remark remark = remarkMapper.selectById(remark_id).getFirst();
+            if(old_remark.getLike() < remark.getLike()){
+                objectMapper.updateHotComment(id, remark.getContent(), remark_id);
+            }
+        }
+    }
 }

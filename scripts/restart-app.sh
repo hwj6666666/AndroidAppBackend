@@ -16,7 +16,7 @@ cd /www/wwwroot/jiaoji
 
 # 启动新的进程
 nohup java -jar jiaoji-0.0.1-SNAPSHOT.jar \
-  --spring.datasource.url="$SPRING_DATASOURCE_URL" \
-  --spring.datasource.username="$SPRING_DATASOURCE_USERNAME" \
-  --spring.datasource.password="$SPRING_DATASOURCE_PASSWORD" \
-  --server.port="$SERVER_PORT" > /dev/null 2>&1 &
+  --spring.datasource.url="jdbc:mysql://localhost:3306/jiaoji" \
+  --spring.datasource.username="root" \
+  --spring.datasource.password=":ex.RSTcgF3M!Ls" \
+  --server.port="6981" > /dev/null 2>&1 &

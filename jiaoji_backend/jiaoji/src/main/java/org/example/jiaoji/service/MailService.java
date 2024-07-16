@@ -1,6 +1,8 @@
 package org.example.jiaoji.service;
 
+import org.example.jiaoji.mapper.UserMapper;
 import org.example.jiaoji.pojo.MailStructure;
+import org.example.jiaoji.pojo.RetType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -13,12 +15,18 @@ public class MailService {
     @Autowired
     private JavaMailSender mailSender;
 
-
+    @Autowired
+    private UserMapper userMapper;
 
     @Value("${spring.mail.username}")
     private String fromMail;
 
-    public void sendMain(String mail, MailStructure mailStructure) {
+    public Boolean sendMain(String mail, MailStructure mailStructure, boolean isRegister) {
+        if (isRegister) {
+            Integer id = userMapper.selectIdByEmail(mail);
+            if (id != null) return false;
+        }
+
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setFrom(fromMail);
         simpleMailMessage.setSubject(mailStructure.getSubject());
@@ -26,5 +34,6 @@ public class MailService {
         simpleMailMessage.setTo(mail);
 
         mailSender.send(simpleMailMessage);
+        return true;
     }
 }

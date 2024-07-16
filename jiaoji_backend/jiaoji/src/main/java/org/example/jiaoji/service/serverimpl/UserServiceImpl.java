@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import org.example.jiaoji.mapper.UserMapper;
 import org.example.jiaoji.pojo.*;
+import org.example.jiaoji.security.PasswordEncoder;
 import org.example.jiaoji.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,8 +47,8 @@ public class UserServiceImpl implements UserService {
 
 
   public User updatePsd(Integer id, User user) {
-    user.setId(id);
-    userMapper.updateUserPsd(user);
+    User this_user=userMapper.selectByUserId(id);
+    reset(this_user.getEmail(), user.getPassword());
     return userMapper.selectByUserId(id);
   }
 
@@ -67,8 +68,12 @@ public class UserServiceImpl implements UserService {
       return retType;
     }
 
-    userMapper.insert(email, password, avatar,username);
+    userMapper.insert(email, avatar, username);
     id = userMapper.selectIdByEmail(email);
+    String salt=PasswordEncoder.generateRandomSalt();
+    String encodedPassword=PasswordEncoder.encode(password,salt);
+    userMapper.insertPassword(email,id,salt,encodedPassword);
+
     retType.setData(id);
     retType.setMsg("注册成功");
     retType.setOk(true);
@@ -84,6 +89,7 @@ public class UserServiceImpl implements UserService {
       retType.setOk(false);
       return retType;
     }
+    password= PasswordEncoder.encode(password,userMapper.selectSaltByUid(id));
     id = userMapper.selectIdByEmailAndPassword(email, password);
     if (id == null) {
       retType.setData(null);
@@ -156,7 +162,9 @@ public class UserServiceImpl implements UserService {
       retType.setMsg("邮箱未注册");
       return retType;
     }
-    userMapper.resetPassword(id, password);
+    String salt=userMapper.selectSaltByUid(id);
+    String encodedPassword=PasswordEncoder.encode(password,salt);
+    userMapper.resetPassword(id, encodedPassword);
     retType.setOk(true);
     retType.setMsg("重置密码成功");
     return retType;

@@ -56,5 +56,5 @@ jobs:
           SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
           SERVER_PORT: ${{ secrets.SERVER_PORT }}
-        # run: ssh root@124.70.209.108 'bash -s' < ./scripts/restart-app.sh
-        run: ssh root@124.70.209.108 'bash scripts/restart-app.sh'
+        run: ssh root@124.70.209.108 'bash -s' < ./scripts/restart-app.sh
+        # run: ssh root@124.70.209.108 'bash scripts/restart-app.sh'

@@ -10,7 +10,7 @@ export SERVER_PORT=$SERVER_PORT
 cd /www/wwwroot/jiaoji
 
 # 停止旧的进程
-pkill -f 'java -jar jiaoji.jar'
+pkill -f 'java -jar jiaoji-0.0.1-SNAPSHOT.jar'
 
 # 备份旧版本的JAR文件
 if [ -f "jiaoji-0.0.1-SNAPSHOT.jar" ]; then
@@ -18,7 +18,7 @@ if [ -f "jiaoji-0.0.1-SNAPSHOT.jar" ]; then
 fi
 
 # 启动新的进程
-nohup java -jar jiaoji.jar \
+nohup java -jar jiaoji-0.0.1-SNAPSHOT.jar \
   --spring.datasource.url="$SPRING_DATASOURCE_URL" \
   --spring.datasource.username="$SPRING_DATASOURCE_USERNAME" \
   --spring.datasource.password="$SPRING_DATASOURCE_PASSWORD" \

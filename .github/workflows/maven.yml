@@ -11,16 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up JDK 22
         uses: actions/setup-java@v3
         with:
           java-version: '22'
           distribution: 'temurin'
           cache: maven
+
       - name: Build and Test with Maven
         run: mvn -B package --file jiaoji_backend/jiaoji/pom.xml # Updated path to the pom.xml
-      - name: List target directory
-        run: ls -la jiaoji_backend/jiaoji/target # Update to the correct path
+
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
@@ -33,7 +34,7 @@ jobs:
     needs: build-and-test
     steps:
       - uses: actions/checkout@v4  # Ensure all files, including scripts, are available
-      
+
       - name: Install SSH key
         uses: webfactory/ssh-agent@v0.5.3
         with:
@@ -45,17 +46,11 @@ jobs:
           name: jiaoji-jar
           path: target
 
-      - name: List target directory
-        run: ls -la target
-
       - name: Stop Application
         run: ssh -o StrictHostKeyChecking=no root@124.70.209.108 'bash scripts/stop-app.sh'
 
       - name: Copy files via SSH
         run: scp target/jiaoji-0.0.1-SNAPSHOT.jar root@124.70.209.108:/www/wwwroot/jiaoji
-
-      - name: Check current directory on remote server
-        run: ssh root@124.70.209.108 'pwd'
 
       - name: Restart Application
         env:

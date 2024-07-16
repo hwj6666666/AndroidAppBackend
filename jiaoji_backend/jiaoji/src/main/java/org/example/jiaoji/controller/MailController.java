@@ -15,9 +15,22 @@ public class MailController {
   @PostMapping("/send/{mail}")
   public String sendMail(@PathVariable String mail, @RequestBody MailStructure mailStructure) {
 
-    System.out.println("Begin mailing!!");
-    mailService.sendMain(mail, mailStructure);
-    System.out.println("Mail Sent Successfully!!");
-    return "Mail Sent Successfully !!";
+    System.out.println("Begin register mailing!!");
+    if (mailService.sendMain(mail, mailStructure,true)) {
+      System.out.println("Mail Sent Successfully!!");
+      return "Mail Sent Successfully !!";
+    }
+    return "Mail Sent Failed!!";
+  }
+
+  @PostMapping("/reset/{mail}")
+  public String resetMail(@PathVariable String mail, @RequestBody MailStructure mailStructure) {
+
+    System.out.println("Begin reset mailing!!");
+    if (mailService.sendMain(mail, mailStructure, false)) {
+      System.out.println("Mail Sent Successfully!!");
+      return "Mail Sent Successfully !!";
+    }
+    return "Mail Sent Failed!!";
   }
 }

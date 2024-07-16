@@ -1,9 +1,6 @@
 package org.example.jiaoji.service;
 
-import org.example.jiaoji.pojo.Objects;
-import org.example.jiaoji.pojo.RetType;
-import org.example.jiaoji.pojo.Topic;
-import org.example.jiaoji.pojo.top3Object;
+import org.example.jiaoji.pojo.*;
 
 import java.util.List;
 
@@ -21,9 +18,15 @@ public interface ObjectService {
 
     public List<Objects> search(String keyword);
 
-    public String getHottestRemark(Integer id);
+    public Remark getHottestRemark(Integer id);
 
     public List<top3Object> SelectTop3(Integer topicId);
 
     public RetType deleteObject(Integer objectId);
+
+    public void updateAveScore(Integer id, Integer score);
+
+    public void decAveScore(Integer id, Integer score);
+
+    public void updateHotComment(Integer id, Integer likes, Integer change);
 }

@@ -13,8 +13,8 @@ cd /www/wwwroot/jiaoji
 pkill -f 'java -jar jiaoji.jar'
 
 # 备份旧版本的JAR文件
-if [ -f "jiaoji.jar" ]; then
-  mv jiaoji.jar jiaoji.jar.bak_$(date +%Y%m%d%H%M%S)
+if [ -f "jiaoji-0.0.1-SNAPSHOT.jar" ]; then
+  mv jiaoji-0.0.1-SNAPSHOT.jar jiaoji.jar.bak_$(date +%Y%m%d%H%M%S)
 fi
 
 # 启动新的进程

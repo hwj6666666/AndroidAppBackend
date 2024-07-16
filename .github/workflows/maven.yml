@@ -44,6 +44,8 @@ jobs:
           path: target
       - name: List target directory
         run: ls -la target
+      - name: Stop Application
+        run: ssh root@124.70.209.108 'bash scripts/stop-app.sh
       - name: Copy files via SSH
         run: scp -o StrictHostKeyChecking=no target/jiaoji-0.0.1-SNAPSHOT.jar root@124.70.209.108:/www/wwwroot/jiaoji
       - name: Check current directory on remote server

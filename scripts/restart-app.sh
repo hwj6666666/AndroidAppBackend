@@ -20,3 +20,8 @@ nohup java -jar jiaoji-0.0.1-SNAPSHOT.jar \
   --spring.datasource.username="jiaoji" \
   --spring.datasource.password=":ex.RSTcgF3M!Ls" \
   --server.port="6981" > /dev/null 2>&1 &
+
+if [ $? -ne 0 ]; then
+  echo "Failed to start the new application process."
+  exit 1
+fi

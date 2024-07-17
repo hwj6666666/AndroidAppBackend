@@ -12,7 +12,7 @@
 #export SERVER_PORT=6981
 
 # 进入应用程序目录
-cd /www/wwwroot/jiaoji
+#cd /www/wwwroot/jiaoji || exit 1
 
 # 启动新的进程
 nohup java -jar jiaoji-0.0.1-SNAPSHOT.jar \

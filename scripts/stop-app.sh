@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 进入应用程序目录
-cd /www/wwwroot/jiaoji
+cd /www/wwwroot/jiaoji || exit
 
 # 停止旧的进程
 pkill -f 'java -jar jiaoji-0.0.1-SNAPSHOT.jar' || echo "No old application process found to stop."

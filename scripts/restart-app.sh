@@ -6,10 +6,10 @@
 # export SPRING_DATASOURCE_PASSWORD=$SPRING_DATASOURCE_PASSWORD
 # export SERVER_PORT=$SERVER_PORT
 
-export SPRING_DATASOURCE_URL='jdbc:mysql://localhost:3306/jiaoji'
-export SPRING_DATASOURCE_USERNAME='root'
-export SPRING_DATASOURCE_PASSWORD=':ex.RSTcgF3M!Ls'
-export SERVER_PORT=6981
+#export SPRING_DATASOURCE_URL='jdbc:mysql://localhost:3306/jiaoji'
+#export SPRING_DATASOURCE_USERNAME='root'
+#export SPRING_DATASOURCE_PASSWORD=':ex.RSTcgF3M!Ls'
+#export SERVER_PORT=6981
 
 # 进入应用程序目录
 cd /www/wwwroot/jiaoji
@@ -17,11 +17,6 @@ cd /www/wwwroot/jiaoji
 # 启动新的进程
 nohup java -jar jiaoji-0.0.1-SNAPSHOT.jar \
   --spring.datasource.url="jdbc:mysql://localhost:3306/jiaoji" \
-  --spring.datasource.username="root" \
+  --spring.datasource.username="jiaoji" \
   --spring.datasource.password=":ex.RSTcgF3M!Ls" \
   --server.port="6981" > /dev/null 2>&1 &
-
-if [ $? -ne 0 ]; then
-  echo "Failed to start the new application process."
-  exit 1
-fi

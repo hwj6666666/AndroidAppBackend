@@ -11,19 +11,27 @@
 #export SPRING_DATASOURCE_PASSWORD=':ex.RSTcgF3M!Ls'
 #export SERVER_PORT=6981
 
+if ! command -v java &> /dev/null; then
+    echo "Java could not be found"
+    exit 1
+fi
+
 # 进入应用程序目录
-#cd /www/wwwroot/jiaoji || exit 1
+cd /www/wwwroot/jiaoji || { echo "Failed to change directory"; exit 1; }
 
 # 启动新的进程
-#nohup java -jar jiaoji.jar \
-#  --spring.datasource.url=jdbc:mysql://localhost:3306/jiaoji \
-#  --spring.datasource.username=jiaoji \
-#  --spring.datasource.password=':ex.RSTcgF3M!Ls' \
-#  --server.port=6981 > /dev/null 2>&1 &
+echo "Starting application..."
+nohup java -jar jiaoji.jar \
+  --spring.datasource.url=jdbc:mysql://localhost:3306/jiaoji \
+  --spring.datasource.username=jiaoji \
+  --spring.datasource.password=':ex.RSTcgF3M!Ls' \
+  --server.port=6981 > jiaoji.log 2>&1 &
 
 java -jar jiaoji.jar --spring.datasource.url=jdbc:mysql://localhost:3306/jiaoji --spring.datasource.username=jiaoji --spring.datasource.password=':ex.RSTcgF3M!Ls' --server.port=6981
 
-#if [ $? -ne 0 ]; then
-#  echo "Failed to start the new application process."
-#  exit 1
-#fi
+if [ $? -ne 0 ]; then
+  echo "Failed to start the new application process. Check jiaoji.log for details."
+  exit 1
+fi
+
+echo "Application started successfully."

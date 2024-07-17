@@ -2,6 +2,9 @@ package org.example.jiaoji.controller;
 
 import java.util.List;
 import java.util.Map;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import org.example.jiaoji.pojo.Objects;
 import org.example.jiaoji.pojo.Remark;
 import org.example.jiaoji.pojo.RetType;
@@ -10,6 +13,7 @@ import org.example.jiaoji.pojo.User;
 import org.example.jiaoji.service.ObjectService;
 import org.example.jiaoji.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +24,9 @@ public class UserController {
   @Autowired private UserService userService;
 
   @Autowired private ObjectService objectService;
+
+  @Autowired
+  private StringRedisTemplate stringRedisTemplate;
 
     //takes 5s
     @GetMapping("/user")
@@ -32,8 +39,18 @@ public class UserController {
   @GetMapping("/user/{id}")
   @ResponseBody
   public ResponseEntity<User> getUserById(@PathVariable("id") Integer id) {
-    User user = userService.SelectByUserId(id);
-    return ResponseEntity.ok(user);
+      String key="userInfo"+id;
+    if (stringRedisTemplate.opsForValue().get(key) == null) {
+      User user = userService.SelectByUserId(id);
+      String json = JSON.toJSONString(user);
+      stringRedisTemplate.opsForValue().set(key, json, 3600, java.util.concurrent.TimeUnit.SECONDS);
+      return ResponseEntity.ok(user);
+    }
+    else {
+      String json = stringRedisTemplate.opsForValue().get(key);
+      User user = JSON.parseObject(json, new TypeReference<User>() {});
+      return ResponseEntity.ok(user);
+    }
   }
 
   @GetMapping("/user/{id}/topics")

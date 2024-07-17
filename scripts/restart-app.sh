@@ -16,10 +16,10 @@ cd /www/wwwroot/jiaoji
 
 # 启动新的进程
 nohup java -jar jiaoji-0.0.1-SNAPSHOT.jar \
-  --spring.datasource.url="jdbc:mysql://localhost:3306/jiaoji" \
-  --spring.datasource.username="jiaoji" \
-  --spring.datasource.password=":ex.RSTcgF3M!Ls" \
-  --server.port="6981" > /dev/null 2>&1 &
+  --spring.datasource.url=jdbc:mysql://localhost:3306/jiaoji \
+  --spring.datasource.username=jiaoji \
+  --spring.datasource.password=':ex.RSTcgF3M!Ls' \
+  --server.port=6981 > /dev/null 2>&1 &
 
 if [ $? -ne 0 ]; then
   echo "Failed to start the new application process."

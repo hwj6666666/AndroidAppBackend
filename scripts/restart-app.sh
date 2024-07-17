@@ -15,14 +15,15 @@
 #cd /www/wwwroot/jiaoji || exit 1
 
 # 启动新的进程
-#jiaoji-0.0.1-SNAPSHOT.jar
-nohup java -jar jiaoji.jar \
-  --spring.datasource.url=jdbc:mysql://localhost:3306/jiaoji \
-  --spring.datasource.username=jiaoji \
-  --spring.datasource.password=':ex.RSTcgF3M!Ls' \
-  --server.port=6981 > /dev/null 2>&1 &
+#nohup java -jar jiaoji.jar \
+#  --spring.datasource.url=jdbc:mysql://localhost:3306/jiaoji \
+#  --spring.datasource.username=jiaoji \
+#  --spring.datasource.password=':ex.RSTcgF3M!Ls' \
+#  --server.port=6981 > /dev/null 2>&1 &
 
-if [ $? -ne 0 ]; then
-  echo "Failed to start the new application process."
-  exit 1
-fi
+java -jar jiaoji.jar --spring.datasource.url=jdbc:mysql://localhost:3306/jiaoji --spring.datasource.username=jiaoji --spring.datasource.password=':ex.RSTcgF3M!Ls' --server.port=6981
+
+#if [ $? -ne 0 ]; then
+#  echo "Failed to start the new application process."
+#  exit 1
+#fi

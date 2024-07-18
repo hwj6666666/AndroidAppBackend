@@ -1,5 +1,6 @@
 package org.example.jiaoji.service;
 
+import com.github.pagehelper.PageInfo;
 import org.example.jiaoji.pojo.*;
 
 import java.util.List;
@@ -8,7 +9,7 @@ public interface ObjectService {
 
     public Integer InsertObject(Objects data);
 
-    public List<Objects> SelectAllInTopic(Integer id);
+    public PageInfo<Objects> SelectAllInTopic(Integer id, Integer pageSize, Integer pageIndex);
 
     public  List<Objects> SelectById(Integer id);
 

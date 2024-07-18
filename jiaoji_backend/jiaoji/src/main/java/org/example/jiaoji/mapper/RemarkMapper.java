@@ -3,6 +3,7 @@ package org.example.jiaoji.mapper;
 import org.apache.ibatis.annotations.*;
 import org.example.jiaoji.pojo.Remark;
 import org.example.jiaoji.pojo.RemarkLike;
+import org.example.jiaoji.pojo.RemarkScore;
 
 import java.util.List;
 
@@ -19,6 +20,9 @@ public interface RemarkMapper {
 
     @Select("select * from remarks where id = #{id}")
     public List<Remark> selectById(Integer id);
+
+    @Select("select * from remarks where id = #{id}")
+    public Remark SelectOneById(Integer id);
 
     @Select("select * from remarks where object_id=#{objectId} and score=#{score}")
     public List<Remark> selectByObjectIdAndScore(Integer objectId, Integer score);
@@ -47,4 +51,13 @@ public interface RemarkMapper {
 
     @Insert("insert into rmk_likes(uid,rmk_id) values (#{uid},#{remarkId})")
     public void insertLikes(Integer uid, Integer remarkId);
+
+    @Update("update score set ${col} = ${col} + 1 where object_id = #{objectId}")
+    public void updateScore(String col, Integer objectId);
+
+    @Update("update score set ${col} = ${col} - 1 where object_id = #{objectId}")
+    public void updateScoreSub(String col, Integer objectId);
+
+    @Select("select * from score where object_id = #{objectId}")
+    public RemarkScore selectScore(Integer objectId);
 }

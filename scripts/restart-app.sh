@@ -10,9 +10,9 @@ export PATH=$JAVA_HOME/bin:$PATH
 # export SPRING_DATASOURCE_PASSWORD=$SPRING_DATASOURCE_PASSWORD
 # export SERVER_PORT=$SERVER_PORT
 
-#export SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/jiaoji
-#export SPRING_DATASOURCE_USERNAME=jiaoji
-#export SPRING_DATASOURCE_PASSWORD=':ex.RSTcgF3M!Ls'
+export SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/jiaoji
+export SPRING_DATASOURCE_USERNAME=jiaoji
+export SPRING_DATASOURCE_PASSWORD=':ex.RSTcgF3M!Ls'
 export SERVER_PORT=6981
 
 # 检查 Java 是否可用
@@ -38,9 +38,9 @@ cd /www/wwwroot/jiaoji || { echo "Failed to change directory"; exit 1; }
 # 启动新的进程
 echo "Starting application..."
 nohup java -jar jiaoji.jar \
-  --spring.datasource.url=jdbc:mysql://localhost:3306/jiaoji \
-  --spring.datasource.username=jiaoji \
-  --spring.datasource.password=':ex.RSTcgF3M!Ls' \
+  --spring.datasource.url=SPRING_DATASOURCE_URL \
+  --spring.datasource.username=SPRING_DATASOURCE_USERNAME \
+  --spring.datasource.password=SPRING_DATASOURCE_PASSWORD \
   --server.port=$SERVER_PORT > jiaoji.log 2>&1 &
 
 # 等待几秒钟以确保应用程序有足够时间启动

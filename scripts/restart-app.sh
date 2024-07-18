@@ -38,9 +38,9 @@ cd /www/wwwroot/jiaoji || { echo "Failed to change directory"; exit 1; }
 # 启动新的进程
 echo "Starting application..."
 nohup java -jar jiaoji.jar \
-  --spring.datasource.url=SPRING_DATASOURCE_URL \
-  --spring.datasource.username=SPRING_DATASOURCE_USERNAME \
-  --spring.datasource.password=SPRING_DATASOURCE_PASSWORD \
+  --spring.datasource.url=$SPRING_DATASOURCE_URL \
+  --spring.datasource.username=$SPRING_DATASOURCE_USERNAME \
+  --spring.datasource.password=$SPRING_DATASOURCE_PASSWORD \
   --server.port=$SERVER_PORT > jiaoji.log 2>&1 &
 
 # 等待几秒钟以确保应用程序有足够时间启动

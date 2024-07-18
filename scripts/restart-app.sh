@@ -10,10 +10,10 @@ export PATH=$JAVA_HOME/bin:$PATH
 # export SPRING_DATASOURCE_PASSWORD=$SPRING_DATASOURCE_PASSWORD
 # export SERVER_PORT=$SERVER_PORT
 
-export SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/jiaoji
-export SPRING_DATASOURCE_USERNAME=jiaoji
-export SPRING_DATASOURCE_PASSWORD=':ex.RSTcgF3M!Ls'
-export SERVER_PORT=6981
+#export SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/jiaoji
+#export SPRING_DATASOURCE_USERNAME=jiaoji
+#export SPRING_DATASOURCE_PASSWORD=':ex.RSTcgF3M!Ls'
+#export SERVER_PORT=6981
 
 # 检查 Java 是否可用
 if ! command -v java &> /dev/null; then

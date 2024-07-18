@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.jiaoji.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -29,6 +30,8 @@ public class AuthorizationFilter implements Filter {
 
     @Autowired
     UserMapper userMapper;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -47,6 +50,7 @@ public class AuthorizationFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
@@ -64,45 +68,50 @@ public class AuthorizationFilter implements Filter {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "请先登录获取token");
                 return;
             }
-
-            if (!token.startsWith("woshinengdie:_")) {
+            if(stringRedisTemplate.opsForValue().get(token.replaceFirst("woshinengdie:_", "")) != null){
+                filterChain.doFilter(servletRequest, servletResponse);
+            }else
+            {
+                if (!token.startsWith("woshinengdie:_")) {
                 System.out.println("Not Jiao Ji token!");
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Not Jiao Ji token!");
                 return;
-            }
-
-            token = token.replaceFirst("woshinengdie:_", "");
-
-            if (JWTUtil.verify(token, SECRET_KEY)) {
-                JWTValidator validator = JWTValidator.of(JWTUtil.parseToken(token));
-                try {
-                    validator.validateDate();
-                } catch (ValidateException e) {
-                    System.out.println("Token should be updated!");
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token过期，请重新登录");
-                    return;
                 }
 
-                JWT parsedToken = JWTUtil.parseToken(token);
+                token = token.replaceFirst("woshinengdie:_", "");
 
-                if (!parsedToken.getPayloads().getStr("ip").equals(request.getRemoteAddr())) {
-                    System.out.println("ip check failed!");
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "ip check failed!");
+                if (JWTUtil.verify(token, SECRET_KEY)) {
+                    JWTValidator validator = JWTValidator.of(JWTUtil.parseToken(token));
+                    try {
+                        validator.validateDate();
+                    } catch (ValidateException e) {
+                        System.out.println("Token should be updated!");
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token过期，请重新登录");
+                        return;
+                    }
+
+                    JWT parsedToken = JWTUtil.parseToken(token);
+
+                    if (!parsedToken.getPayloads().getStr("ip").equals(request.getRemoteAddr())) {
+                        System.out.println("ip check failed!");
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "ip check failed!");
+                        return;
+                    }
+
+                    if (userMapper.selectIdByEmail(parsedToken.getPayloads().getStr("email")) == null) {
+                        System.out.println("email check failed!");
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "email check failed!");
+                        return;
+                    }
+
+                    System.out.println("Token verified successfully");
+                    stringRedisTemplate.opsForValue().set(token, "1", 600, java.util.concurrent.TimeUnit.SECONDS);
+                    filterChain.doFilter(servletRequest, servletResponse);
+                } else {
+                    System.out.println("Unauthorized access");
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "token验证失败");
                     return;
                 }
-
-                if (userMapper.selectIdByEmail(parsedToken.getPayloads().getStr("email")) == null) {
-                    System.out.println("email check failed!");
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "email check failed!");
-                    return;
-                }
-
-                System.out.println("Token verified successfully");
-                filterChain.doFilter(servletRequest, servletResponse);
-            } else {
-                System.out.println("Unauthorized access");
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "token验证失败");
-                return;
             }
         }
     }

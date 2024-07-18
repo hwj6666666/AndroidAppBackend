@@ -48,7 +48,7 @@ public class LoginController {
             String accessToken = JWT.create().
                     setPayload("email", user.getEmail()).
                     setPayload("ip", clientIp).
-                    setExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 10)).
+                    setExpiresAt(new Date(System.currentTimeMillis() + 1 * 60 * 10)).
                     setKey(SECRET_KEY).sign();
 
             String refreshToken = JWT.create().

@@ -11,7 +11,6 @@ import org.example.jiaoji.pojo.RetType;
 import org.example.jiaoji.pojo.Topic;
 import org.example.jiaoji.pojo.top3Object;
 import org.example.jiaoji.service.ObjectService;
-import org.example.jiaoji.service.RemarkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

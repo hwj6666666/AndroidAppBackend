@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import org.example.jiaoji.pojo.Comment;
 import org.example.jiaoji.pojo.RetType;
 import org.example.jiaoji.service.CommentService;
+import org.example.jiaoji.utils.KafkaProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 public class CommentController {
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private KafkaProducerService kfkproducer;
 
     //takes 8s
     @GetMapping("/comments/get/{remarkId}")
@@ -22,8 +25,6 @@ public class CommentController {
                                                         @RequestParam Integer pageSize) {
         return ResponseEntity.ok(commentService.SelectByRemark(remarkId, pageSize, pageIndex));
     }
-
-    
     @PostMapping("/comments")
     public Integer insert(@RequestBody Comment comment) {
         return commentService.addComment(comment);
@@ -31,7 +32,8 @@ public class CommentController {
 
     @GetMapping("/comments/delete/{id}")
     public RetType delete(@PathVariable Integer id) {
-        return commentService.deleteById(id);
+        kfkproducer.sendMessage("deleteComment", id);
+        return new RetType(true, "success", null);
     }
 
 }

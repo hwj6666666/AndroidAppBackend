@@ -1,8 +1,12 @@
 package org.example.jiaoji.pojo;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class RetType {
     private boolean ok;
     private String msg;

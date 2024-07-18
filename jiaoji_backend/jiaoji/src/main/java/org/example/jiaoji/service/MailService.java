@@ -2,7 +2,6 @@ package org.example.jiaoji.service;
 
 import org.example.jiaoji.mapper.UserMapper;
 import org.example.jiaoji.pojo.MailStructure;
-import org.example.jiaoji.pojo.RetType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;

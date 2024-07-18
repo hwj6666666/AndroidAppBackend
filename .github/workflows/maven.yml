@@ -7,7 +7,7 @@ on:
       - '**/*.md'       # 忽略所有 Markdown 文件
       - '**/*.txt'      # 忽略所有文本文件
       - '**/docs/**'    # 忽略 docs 目录中的所有文件
-      - '.github/**'
+#      - '.github/**'
       - 'databaseSQL/**'
       - 'scripts/**'
   pull_request:

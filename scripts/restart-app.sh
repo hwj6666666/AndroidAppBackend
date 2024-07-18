@@ -41,7 +41,7 @@ nohup java -jar jiaoji.jar \
   --spring.datasource.url=jdbc:mysql://localhost:3306/jiaoji \
   --spring.datasource.username=jiaoji \
   --spring.datasource.password=':ex.RSTcgF3M!Ls' \
-  --server.port=6981 > jiaoji.log 2>&1 &
+  --server.port=$SERVER_PORT > jiaoji.log 2>&1 &
 
 # 等待几秒钟以确保应用程序有足够时间启动
 sleep 10

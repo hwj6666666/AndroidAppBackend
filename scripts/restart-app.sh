@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # 确保 Java 在 PATH 中
-export JAVA_HOME=/root/java/jdk-22.0.1
+# which java
+export JAVA_HOME=/root/java/jdk-22.0.2
 export PATH=$JAVA_HOME/bin:$PATH
 
 # 使用环境变量配置

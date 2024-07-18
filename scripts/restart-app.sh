@@ -13,8 +13,9 @@ export PATH=$JAVA_HOME/bin:$PATH
 #export SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/jiaoji
 #export SPRING_DATASOURCE_USERNAME=jiaoji
 #export SPRING_DATASOURCE_PASSWORD=':ex.RSTcgF3M!Ls'
-#export SERVER_PORT=6981
+export SERVER_PORT=6981
 
+# 检查 Java 是否可用
 if ! command -v java &> /dev/null; then
     echo "Java could not be found"
     exit 1
@@ -42,11 +43,13 @@ nohup java -jar jiaoji.jar \
   --spring.datasource.password=':ex.RSTcgF3M!Ls' \
   --server.port=6981 > jiaoji.log 2>&1 &
 
-java -jar jiaoji.jar --spring.datasource.url=jdbc:mysql://localhost:3306/jiaoji --spring.datasource.username=jiaoji --spring.datasource.password=':ex.RSTcgF3M!Ls' --server.port=6981
+# 等待几秒钟以确保应用程序有足够时间启动
+sleep 10
 
-if [ $? -ne 0 ]; then
-  echo "Failed to start the new application process. Check jiaoji.log for details."
-  exit 1
+# 检查应用程序是否成功启动
+if lsof -ti:$SERVER_PORT; then
+    echo "Application started successfully on port $SERVER_PORT."
+else
+    echo "Failed to start application on port $SERVER_PORT. Check jiaoji.log for details."
+    exit 1
 fi
-
-echo "Application started successfully."

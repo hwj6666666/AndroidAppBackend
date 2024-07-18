@@ -20,6 +20,17 @@ if ! command -v java &> /dev/null; then
     exit 1
 fi
 
+# 检查端口是否已被占用
+if lsof -ti:$SERVER_PORT; then
+    echo "Port $SERVER_PORT is already in use. Attempting to stop the process."
+    kill $(lsof -ti:$SERVER_PORT)
+    sleep 5  # 等待几秒以确保进程已被结束
+    if lsof -ti:$SERVER_PORT; then
+        echo "Failed to free up the port $SERVER_PORT. Exiting."
+        exit 1
+    fi
+fi
+
 # 进入应用程序目录
 cd /www/wwwroot/jiaoji || { echo "Failed to change directory"; exit 1; }
 

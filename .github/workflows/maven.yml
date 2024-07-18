@@ -31,10 +31,10 @@ jobs:
           path: jiaoji_backend/jiaoji/target/jiaoji-0.0.1-SNAPSHOT.jar # Update to the correct path
 
   deploy:
-   if: github.event_name == 'push'
-   runs-on: ubuntu-latest
-   needs: build-and-test
-   steps:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    steps:
      - uses: actions/checkout@v4  # Ensure all files, including scripts, are available
 
      - name: Install SSH key

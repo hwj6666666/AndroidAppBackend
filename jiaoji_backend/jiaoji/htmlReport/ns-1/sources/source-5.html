@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
-  <title>Coverage Report > ObjectController</title>
+  <title>Coverage Report > MailController</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -22,7 +22,7 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">org.example.jiaoji.controller</a>
 </div>
 
-<h1>Coverage Summary for Class: ObjectController (org.example.jiaoji.controller)</h1>
+<h1>Coverage Summary for Class: MailController (org.example.jiaoji.controller)</h1>
 
 <table class="coverageStats">
 <tr>
@@ -45,7 +45,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 </th>
 </tr>
 <tr>
-  <td class="name">ObjectController</td>
+  <td class="name">MailController</td>
 <td class="coverageStat">
   <span class="percent">
     100%
@@ -59,7 +59,7 @@ Current scope:     <a href="../../index.html">all classes</a>
     100%
   </span>
   <span class="absValue">
-    (7/7)
+    (3/3)
   </span>
 </td>
 <td class="coverageStat">
@@ -75,7 +75,7 @@ Current scope:     <a href="../../index.html">all classes</a>
     100%
   </span>
   <span class="absValue">
-    (15/15)
+    (11/11)
   </span>
 </td>
 </tr>
@@ -89,72 +89,39 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package org.example.jiaoji.controller;
 &nbsp;
-&nbsp;import org.example.jiaoji.pojo.Objects;
-&nbsp;import org.example.jiaoji.pojo.RetType;
-&nbsp;import org.example.jiaoji.pojo.top3Object;
+&nbsp;import org.example.jiaoji.pojo.MailStructure;
+&nbsp;import org.example.jiaoji.service.MailService;
 &nbsp;import org.springframework.beans.factory.annotation.Autowired;
 &nbsp;import org.springframework.web.bind.annotation.*;
-&nbsp;import org.springframework.http.ResponseEntity;
-&nbsp;import org.springframework.web.bind.annotation.ResponseBody;
-&nbsp;
-&nbsp;import java.util.List;
-&nbsp;
-&nbsp;import org.example.jiaoji.service.ObjectService;
-&nbsp;import org.springframework.web.bind.annotation.RequestBody;
 &nbsp;
 &nbsp;@RestController
 &nbsp;@CrossOrigin
-<b class="fc">&nbsp;public class ObjectController {</b>
-&nbsp;    @Autowired
-&nbsp;    private ObjectService objectService;
+&nbsp;@RequestMapping(&quot;/mail&quot;)
+<b class="fc">&nbsp;public class MailController {</b>
 &nbsp;
-&nbsp;    @GetMapping(&quot;/object/{id}&quot;)
-&nbsp;    @ResponseBody
-&nbsp;    public ResponseEntity&lt;List&lt;Objects&gt;&gt; getObject(@PathVariable(&quot;id&quot;) Integer id) {
-&nbsp;        List&lt;Objects&gt; objects;
-<b class="fc">&nbsp;        objects = objectService.SelectAllInTopic(id);</b>
-<b class="fc">&nbsp;        for (Objects object : objects) {</b>
-<b class="fc">&nbsp;            object.setAveScore(objectService.getAveScore(object.getId()));</b>
-<b class="fc">&nbsp;            object.setHottestRemark(objectService.getHottestRemark(object.getId()));</b>
-&nbsp;        }
-<b class="fc">&nbsp;        return ResponseEntity.ok(objects);</b>
+&nbsp;  @Autowired private MailService mailService;
+&nbsp;
+&nbsp;  @PostMapping(&quot;/send/{mail}&quot;)
+&nbsp;  public String sendMail(@PathVariable String mail, @RequestBody MailStructure mailStructure) {
+&nbsp;
+<b class="fc">&nbsp;    System.out.println(&quot;Begin register mailing!!&quot;);</b>
+<b class="fc">&nbsp;    if (mailService.sendMain(mail, mailStructure,true)) {</b>
+<b class="fc">&nbsp;      System.out.println(&quot;Mail Sent Successfully!!&quot;);</b>
+<b class="fc">&nbsp;      return &quot;Mail Sent Successfully !!&quot;;</b>
 &nbsp;    }
+<b class="fc">&nbsp;    return &quot;Mail Sent Failed!!&quot;;</b>
+&nbsp;  }
 &nbsp;
-&nbsp;    @PostMapping(&quot;/object&quot;)
-&nbsp;    public Integer insert(@RequestBody Objects object) {
-<b class="fc">&nbsp;        return objectService.InsertObject(object);</b>
+&nbsp;  @PostMapping(&quot;/reset/{mail}&quot;)
+&nbsp;  public String resetMail(@PathVariable String mail, @RequestBody MailStructure mailStructure) {
+&nbsp;
+<b class="fc">&nbsp;    System.out.println(&quot;Begin reset mailing!!&quot;);</b>
+<b class="fc">&nbsp;    if (mailService.sendMain(mail, mailStructure, false)) {</b>
+<b class="fc">&nbsp;      System.out.println(&quot;Mail Sent Successfully!!&quot;);</b>
+<b class="fc">&nbsp;      return &quot;Mail Sent Successfully !!&quot;;</b>
 &nbsp;    }
-&nbsp;
-&nbsp;    @GetMapping(&quot;/object/remark/{id}&quot;)
-&nbsp;    @ResponseBody
-&nbsp;    public ResponseEntity&lt;List&lt;Objects&gt;&gt; getObjectById(@PathVariable(&quot;id&quot;) Integer id) {
-&nbsp;        List&lt;Objects&gt; objects;
-<b class="fc">&nbsp;        objects = objectService.SelectById(id);</b>
-<b class="fc">&nbsp;        for (Objects object : objects) {</b>
-<b class="fc">&nbsp;            object.setAveScore(objectService.getAveScore(object.getId()));</b>
-<b class="fc">&nbsp;            object.setHottestRemark(objectService.getHottestRemark(object.getId()));</b>
-&nbsp;        }
-<b class="fc">&nbsp;        return ResponseEntity.ok(objects);</b>
-&nbsp;    }
-&nbsp;
-&nbsp;    @GetMapping(&quot;/object/search/{keyword}&quot;)
-&nbsp;    @ResponseBody
-&nbsp;    public List&lt;Objects&gt; getObjectsByTopicId(@PathVariable(&quot;keyword&quot;) String keyword) {
-<b class="fc">&nbsp;        return objectService.search(keyword);</b>
-&nbsp;    }
-&nbsp;
-&nbsp;    @GetMapping(&quot;/object/top3/{topicId}&quot;)
-&nbsp;    @ResponseBody
-&nbsp;    public List&lt;top3Object&gt; getObjectsByTopicId(@PathVariable(&quot;topicId&quot;) Integer topicId) {
-<b class="fc">&nbsp;        return objectService.SelectTop3(topicId);</b>
-&nbsp;    }
-&nbsp;
-&nbsp;    @DeleteMapping(&quot;/object/{id}&quot;)
-&nbsp;    @ResponseBody
-&nbsp;    public RetType delete(@PathVariable(&quot;id&quot;) Integer id) {
-<b class="fc">&nbsp;        return objectService.deleteObject(id);</b>
-&nbsp;    }
-&nbsp;
+<b class="fc">&nbsp;    return &quot;Mail Sent Failed!!&quot;;</b>
+&nbsp;  }
 &nbsp;}
 </code>
 </pre>
@@ -179,7 +146,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2024-07-04 13:52</div>
+    <div style="float:right;">generated on 2024-07-18 17:31</div>
 </div>
 </body>
 </html>

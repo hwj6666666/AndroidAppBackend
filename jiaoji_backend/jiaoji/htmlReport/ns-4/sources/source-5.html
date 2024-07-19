@@ -1,0 +1,131 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > RemarkMapper</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.example.jiaoji.mapper</a>
+</div>
+
+<h1>Coverage Summary for Class: RemarkMapper (org.example.jiaoji.mapper)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">RemarkMapper</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.example.jiaoji.mapper;
+&nbsp;
+&nbsp;import org.apache.ibatis.annotations.*;
+&nbsp;import org.example.jiaoji.pojo.Remark;
+&nbsp;import org.example.jiaoji.pojo.RemarkLike;
+&nbsp;import org.example.jiaoji.pojo.RemarkScore;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Mapper
+&nbsp;public interface RemarkMapper {
+&nbsp;    @Select(&quot;select * from remarks where object_id = #{objectId}&quot;)
+&nbsp;    public List&lt;Remark&gt; selectByObject(Integer objectId);
+&nbsp;
+&nbsp;    @Select(&quot;select * from remarks where object_id = #{objectId} Order By publish_time DESC&quot;)
+&nbsp;    public List&lt;Remark&gt; selectByObjectIdOrderByTime(Integer objectId);
+&nbsp;
+&nbsp;    @Select(&quot;select * from remarks where object_id = #{objectId} Order By `like` DESC&quot;)
+&nbsp;    public List&lt;Remark&gt; selectByObjectIdOrderByLike(Integer objectId);
+&nbsp;
+&nbsp;    @Select(&quot;select * from remarks where id = #{id}&quot;)
+&nbsp;    public List&lt;Remark&gt; selectById(Integer id);
+&nbsp;
+&nbsp;    @Select(&quot;select * from remarks where id = #{id}&quot;)
+&nbsp;    public Remark SelectOneById(Integer id);
+&nbsp;
+&nbsp;    @Select(&quot;select * from remarks where object_id=#{objectId} and score=#{score}&quot;)
+&nbsp;    public List&lt;Remark&gt; selectByObjectIdAndScore(Integer objectId, Integer score);
+&nbsp;
+&nbsp;    @Select(&quot;select * from remarks where user_id = #{uid} and object_id = #{objectId}&quot;)
+&nbsp;    public List&lt;Remark&gt; selectByUser(Integer uid, Integer objectId);
+&nbsp;
+&nbsp;    @Insert(&quot;insert into remarks(user_id,object_id,content,`like`,score,publish_time) values (#{userId},#{objectId},#{content},#{like},#{score},#{publishTime})&quot;)
+&nbsp;    @Options(useGeneratedKeys = true, keyProperty = &quot;id&quot;)
+&nbsp;    public void insert(Remark remark);
+&nbsp;
+&nbsp;    @Update(&quot;update remarks set `like` = #{change} + `like` where id=#{id}&quot;)
+&nbsp;    public void update(Integer id, Integer change);
+&nbsp;
+&nbsp;    @Delete(&quot;delete from remarks where id=#{id}&quot;)
+&nbsp;    public void delete(Integer id);
+&nbsp;
+&nbsp;    @Delete(&quot;delete from remarks where user_id = #{uid} and object_id = #{objectId}&quot;)
+&nbsp;    public void deleteUserObj(Integer uid, Integer objectId);
+&nbsp;
+&nbsp;    @Select(&quot;select * from rmk_likes where uid = #{uid} and rmk_id = #{remarkId}&quot;)
+&nbsp;    public List&lt;RemarkLike&gt; getLikeByUid(Integer uid, Integer remarkId);
+&nbsp;
+&nbsp;    @Update(&quot;update rmk_likes set `liked` = 1 - `liked` where uid = #{uid} and rmk_id = #{remarkId}&quot;)
+&nbsp;    public void updateLikeByUid(Integer uid, Integer remarkId);
+&nbsp;
+&nbsp;    @Insert(&quot;insert into rmk_likes(uid,rmk_id) values (#{uid},#{remarkId})&quot;)
+&nbsp;    public void insertLikes(Integer uid, Integer remarkId);
+&nbsp;
+&nbsp;    @Update(&quot;update score set ${col} = ${col} + 1 where object_id = #{objectId}&quot;)
+&nbsp;    public void updateScore(String col, Integer objectId);
+&nbsp;
+&nbsp;    @Update(&quot;update score set ${col} = ${col} - 1 where object_id = #{objectId}&quot;)
+&nbsp;    public void updateScoreSub(String col, Integer objectId);
+&nbsp;
+&nbsp;    @Select(&quot;select * from score where object_id = #{objectId}&quot;)
+&nbsp;    public RemarkScore selectScore(Integer objectId);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-18 17:31</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,144 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > TopicMapper</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.example.jiaoji.mapper</a>
+</div>
+
+<h1>Coverage Summary for Class: TopicMapper (org.example.jiaoji.mapper)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">TopicMapper</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.example.jiaoji.mapper;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;import org.apache.ibatis.annotations.*;
+&nbsp;import org.example.jiaoji.pojo.Topic;
+&nbsp;
+&nbsp;@Mapper
+&nbsp;public interface TopicMapper {
+&nbsp;    @Select(&quot;select * from topic&quot;) // 由于这里是用的注解，所以不需要写xml文件，但需要将原来的xml文件删除，不然会报错
+&nbsp;    public List&lt;Topic&gt; selectAll();
+&nbsp;    @Select(&quot;select * from topic Order By public_time DESC&quot;) // 由于这里是用的注解，所以不需要写xml文件，但需要将原来的xml文件删除，不然会报错
+&nbsp;    public List&lt;Topic&gt; selectAllOrderByTime();
+&nbsp;    @Select(&quot;select * from topic Order By hot DESC&quot;) // 由于这里是用的注解，所以不需要写xml文件，但需要将原来的xml文件删除，不然会报错
+&nbsp;    public List&lt;Topic&gt; selectAllOrderByHot();
+&nbsp;
+&nbsp;    @Select(&quot;select * from topic where id = #{id} &quot;)
+&nbsp;    public Topic selectById(Integer Id);
+&nbsp;
+&nbsp;    @Select(&quot;select * from topic where class_id = #{id} Order By public_time DESC&quot;)
+&nbsp;    public List&lt;Topic&gt; selectByClassIdOrderByTime(Integer id);
+&nbsp;     @Select(&quot;select * from topic where class_id = #{id} Order By hot DESC&quot;)
+&nbsp;    public List&lt;Topic&gt; selectByClassIdOrderByHot(Integer id);
+&nbsp;
+&nbsp;    @Select(&quot;select id from topic where title = #{title}&quot;)
+&nbsp;    public Integer selectIdByTitleOrderByTime(String title);
+&nbsp;
+&nbsp;    @Select(&quot;select id from topic where title = #{title}&quot;)
+&nbsp;    public Integer selectIdByTitle(String title);
+&nbsp;
+&nbsp;    @Select(&quot;select * from topic where title = #{keyword}&quot;)
+&nbsp;    public Topic selectByTitle(String keyword);
+&nbsp;
+&nbsp;    @Insert(&quot;insert into topic(class_id,user_id,title,picture,introduction,hot,public_time,base64) values(#{classId},#{userId},#{title},#{picture},#{introduction},#{hot},#{publicTime},#{base64})&quot;)
+&nbsp;    @Options(useGeneratedKeys = true, keyProperty = &quot;id&quot;)
+&nbsp;    public int insert(Topic topic);
+&nbsp;
+&nbsp;    @Select(&quot;select * from topic where title like #{keyword}&quot;)
+&nbsp;    public List&lt;Topic&gt; search(String keyword);
+&nbsp;
+&nbsp;    @Update(&quot;update topic set views = #{views} where id = #{id}&quot;)
+&nbsp;    public int updateViews(Integer views, Integer id);
+&nbsp;
+&nbsp;    @Update(&quot;update topic set remark_num = #{remarkNum} where id = #{id}&quot;)
+&nbsp;    public int updateRemarkNum(Integer remarkNum, Integer id);
+&nbsp;
+&nbsp;    @Update(&quot;update topic set favor = favor+1 where id = #{id}&quot;)
+&nbsp;    public int addFavor(Integer id);
+&nbsp;
+&nbsp;    @Update(&quot;update topic set favor = favor+1 where id = #{id}&quot;)
+&nbsp;    public int subFavor(Integer id);
+&nbsp;
+&nbsp;    @Update(&quot;update topic set object_num = #{objectNum} where id = #{id}&quot;)
+&nbsp;    public int updateObjectNum(Integer objectNum, Integer id);
+&nbsp;
+&nbsp;    @Insert(&quot;insert into follow(topic_id,user_id) values(#{topicId},#{userId})&quot;)
+&nbsp;    public int insertFollow(Integer topicId, Integer userId);
+&nbsp;
+&nbsp;    @Delete(&quot;delete from follow where topic_id = #{topicId} and user_id = #{userId}&quot;)
+&nbsp;    public int deleteFollow(Integer topicId, Integer userId);
+&nbsp;
+&nbsp;    @Select(&quot;select count(*) from follow where topic_id = #{topicId} and user_id = #{userId}&quot;)
+&nbsp;    public Boolean findFollow(Integer topicId, Integer userId);
+&nbsp;
+&nbsp;    @Delete(&quot;delete from topic where id = #{topicId}&quot;)
+&nbsp;    public void deleteTopic(Integer topicId);
+&nbsp;
+&nbsp;    @Select(&quot;SELECT position FROM ( select id, ROW_NUMBER() OVER (ORDER BY id ASC) AS position FROM topic) AS ranked_topics WHERE id = #{id}&quot;)
+&nbsp;    public Integer getPositionById(Integer id);
+&nbsp;
+&nbsp;    @Select(&quot;SELECT class_id FROM topic WHERE id = #{id}&quot;)
+&nbsp;    public Integer getClassIdByTopicId();
+&nbsp;
+&nbsp;    @Update(&quot;update topic set views = views + 1 where id = #{id}&quot;)
+&nbsp;    public void addViews(Integer id);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-18 17:31</div>
+</div>
+</body>
+</html>

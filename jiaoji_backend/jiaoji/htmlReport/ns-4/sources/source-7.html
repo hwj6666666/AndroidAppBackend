@@ -1,0 +1,118 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > ObjectMapper</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.example.jiaoji.mapper</a>
+</div>
+
+<h1>Coverage Summary for Class: ObjectMapper (org.example.jiaoji.mapper)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">ObjectMapper</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.example.jiaoji.mapper;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;import org.apache.ibatis.annotations.*;
+&nbsp;import org.example.jiaoji.pojo.Objects;
+&nbsp;import org.example.jiaoji.pojo.Remark;
+&nbsp;import org.example.jiaoji.pojo.Topic;
+&nbsp;import org.example.jiaoji.pojo.top3Object;
+&nbsp;
+&nbsp;@Mapper
+&nbsp;public interface ObjectMapper {
+&nbsp;    @Select(&quot;select * from object&quot;) // 由于这里是用的注解，所以不需要写xml文件，但需要将原来的xml文件删除，不然会报错
+&nbsp;    public List&lt;Objects&gt; selectAll();
+&nbsp;
+&nbsp;    @Select(&quot;select * from object where topic_id = #{id}&quot;)
+&nbsp;    public List&lt;Objects&gt; selectAllInTopic(Integer id);
+&nbsp;
+&nbsp;    @Select(&quot;select * from object where id = #{id}&quot;)
+&nbsp;    public List&lt;Objects&gt; selectById(Integer id);
+&nbsp;    @Select(&quot;select * from object where id = #{id}&quot;)
+&nbsp;    public Objects selectOneById(Integer Id);
+&nbsp;    @Select(&quot;select id from object where title = #{title} and topic_id = #{topic_id}&quot;)
+&nbsp;    public Integer selectIdByTitle(String title, Integer topic_id);
+&nbsp;
+&nbsp;    @Select(&quot;select * from topic where id = #{id}&quot;)
+&nbsp;    public Topic selectTopicById(Integer id);
+&nbsp;
+&nbsp;    @Insert(&quot;insert into object(id,title,topic_id,user_id,picture,description) values(#{id},#{title},#{topicId},#{userId},#{picture},#{description})&quot;)
+&nbsp;    @Options(useGeneratedKeys = true, keyProperty = &quot;id&quot;)
+&nbsp;    public void insert(Objects object);
+&nbsp;
+&nbsp;    @Select(&quot;select * from remarks where object_id = #{object_id}&quot;)
+&nbsp;    public List&lt;Remark&gt; selectAllRemarks(Integer object_id);
+&nbsp;
+&nbsp;    @Delete(&quot;delete from object where id = #{id}&quot;)
+&nbsp;    public void delete(Integer id);
+&nbsp;
+&nbsp;    @Select(&quot;select * from object where title like #{keyword} or description like #{keyword}&quot;)
+&nbsp;    public List&lt;Objects&gt; search(String keyword);
+&nbsp;
+&nbsp;    @Select(&quot;select id,title from object where topic_id = #{topicId} order by id desc limit 3&quot;)
+&nbsp;    public List&lt;top3Object&gt; selectTop3(Integer topicId);
+&nbsp;
+&nbsp;    @Update(&quot;update object set remark_num = #{new_remark_num}, aveScore = #{score} where id = #{id}&quot;)
+&nbsp;    public void updateAveScore(double score, Integer new_remark_num, Integer id);
+&nbsp;
+&nbsp;    @Update(&quot;update object set hottestRemark = #{hot_comment}, remark_id = #{remark_id} where id = #{id}&quot;)
+&nbsp;    public void updateHotComment(Integer id, String hot_comment, Integer remark_id);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-18 17:31</div>
+</div>
+</body>
+</html>

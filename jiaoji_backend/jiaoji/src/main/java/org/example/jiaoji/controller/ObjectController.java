@@ -3,6 +3,7 @@ package org.example.jiaoji.controller;
 import com.github.pagehelper.PageInfo;
 import org.example.jiaoji.pojo.Objects;
 import org.example.jiaoji.pojo.RetType;
+import org.example.jiaoji.pojo.Topic;
 import org.example.jiaoji.pojo.top3Object;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -35,20 +36,16 @@ public class ObjectController {
     public ResponseEntity<PageInfo<Objects>> getObject(@PathVariable("id") Integer id,
                                                        @RequestParam Integer pageIndex,
                                                        @RequestParam Integer pageSize) {
-        System.out.println(pageSize);
-        PageInfo<Objects> objects;
         topicService.addViews(id);
         String key = "getObjectbyTopicId:" + id;
         if (stringRedisTemplate.opsForValue().get(key) == null) {
-            objects = objectService.SelectAllInTopic(id, pageSize, pageIndex);
-            System.out.println(objects);
+            PageInfo<Objects> objects = objectService.SelectAllInTopic(id, pageSize, pageIndex);
             String json = JSON.toJSONString(objects);
             stringRedisTemplate.opsForValue().set(key, json, 10, java.util.concurrent.TimeUnit.SECONDS);
             return ResponseEntity.ok(objects);
         }else {
             String json = stringRedisTemplate.opsForValue().get(key);
-            objects = JSON.parseObject(json, new TypeReference<List<Objects>>() {});
-            System.out.println(objects);
+            PageInfo<Objects> objects = JSON.parseObject(json, new TypeReference<PageInfo<Objects>>() {});
             return ResponseEntity.ok(objects);
         }
     }

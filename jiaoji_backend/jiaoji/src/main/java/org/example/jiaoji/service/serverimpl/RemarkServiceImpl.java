@@ -73,7 +73,7 @@ public class RemarkServiceImpl implements RemarkService {
     public RetType deleteRemark(Integer id) {
         RetType ret = new RetType();
         Remark remark = remarkMapper.SelectOneById(id);
-        if(remark!=null) objectService.decAveScore(remark.getObjectId(), remark.getScore());
+        objectService.decAveScore(remark.getObjectId(), remark.getScore());
         remarkMapper.delete(id);
         remarkMapper.updateScoreSub("score"+remark.getScore(), remark.getObjectId());
         if (remarkMapper.selectById(id).isEmpty()) {

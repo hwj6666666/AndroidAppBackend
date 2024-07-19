@@ -77,9 +77,6 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package org.example.jiaoji.controller;
 &nbsp;
-&nbsp;import java.util.Arrays;
-&nbsp;import java.util.List;
-&nbsp;import java.util.stream.Collectors;
 &nbsp;
 &nbsp;import com.github.pagehelper.PageInfo;
 &nbsp;import org.example.jiaoji.pojo.Comment;
@@ -95,6 +92,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    @Autowired
 &nbsp;    private CommentService commentService;
 &nbsp;
+&nbsp;    //takes 8s
 &nbsp;    @GetMapping(&quot;/comments/get/{remarkId}&quot;)
 &nbsp;    @ResponseBody
 &nbsp;    public ResponseEntity&lt;PageInfo&lt;Comment&gt;&gt; getComment(@PathVariable Integer remarkId, @RequestParam Integer pageIndex,
@@ -102,6 +100,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="fc">&nbsp;        return ResponseEntity.ok(commentService.SelectByRemark(remarkId, pageSize, pageIndex));</b>
 &nbsp;    }
 &nbsp;
+&nbsp;    
 &nbsp;    @PostMapping(&quot;/comments&quot;)
 &nbsp;    public Integer insert(@RequestBody Comment comment) {
 <b class="fc">&nbsp;        return commentService.addComment(comment);</b>
@@ -136,7 +135,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2024-07-04 13:52</div>
+    <div style="float:right;">generated on 2024-07-18 17:31</div>
 </div>
 </body>
 </html>

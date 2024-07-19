@@ -1,0 +1,99 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > TopicService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.example.jiaoji.service</a>
+</div>
+
+<h1>Coverage Summary for Class: TopicService (org.example.jiaoji.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">TopicService</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.example.jiaoji.service;
+&nbsp;
+&nbsp;import org.example.jiaoji.pojo.RetType;
+&nbsp;import org.example.jiaoji.pojo.Topic;
+&nbsp;
+&nbsp;import com.github.pagehelper.PageInfo;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;public interface TopicService {
+&nbsp;
+&nbsp;    public RetType insertTopic(Topic data);
+&nbsp;
+&nbsp;    public PageInfo&lt;Topic&gt; SelectAll(Integer pageSize, Integer pageIndex, String type);
+&nbsp;
+&nbsp;    public Topic SelectById(Integer Id);
+&nbsp;
+&nbsp;    public PageInfo&lt;Topic&gt; SelectByClassId(Integer id, Integer pageSize, Integer pageIndex, String type);
+&nbsp;
+&nbsp;    public PageInfo&lt;Topic&gt; search(String keyword, Integer pageSize, Integer pageIndex);
+&nbsp;
+&nbsp;    public RetType setFollow(Integer topicId, Integer userId);
+&nbsp;
+&nbsp;    public Boolean findFollow(Integer topicId, Integer userId);
+&nbsp;
+&nbsp;    public RetType deleteTopic(Integer topicId);
+&nbsp;
+&nbsp;    public List&lt;Topic&gt; hotTopic();
+&nbsp;
+&nbsp;    public void addViews(Integer topicId);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-18 17:31</div>
+</div>
+</body>
+</html>

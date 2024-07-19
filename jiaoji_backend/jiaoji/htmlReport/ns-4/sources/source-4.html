@@ -1,0 +1,108 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > ChatItemMapper</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.example.jiaoji.mapper</a>
+</div>
+
+<h1>Coverage Summary for Class: ChatItemMapper (org.example.jiaoji.mapper)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+</tr>
+  <tr>
+    <td class="name">ChatItemMapper$MockitoMock$bzcAeYOY</td>
+  </tr>
+  <tr>
+    <td class="name">ChatItemMapper$MockitoMock$bzcAeYOY$auxiliary$g45fRjiM</td>
+  </tr>
+  <tr>
+    <td class="name">ChatItemMapper$MockitoMock$bzcAeYOY$auxiliary$SOgy9tn1</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.example.jiaoji.mapper;
+&nbsp;
+&nbsp;import org.apache.ibatis.annotations.Insert;
+&nbsp;import org.apache.ibatis.annotations.Mapper;
+&nbsp;import org.apache.ibatis.annotations.Select;
+&nbsp;import org.example.jiaoji.pojo.ChatItem;
+&nbsp;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Mapper
+&nbsp;public interface ChatItemMapper {
+&nbsp;    @Select(&quot;SELECT id FROM chat_item WHERE mem_1=#{sendId} AND mem_2=#{receiveId} OR mem_1=#{receiveId} AND mem_2=#{sendId}&quot;)
+&nbsp;    Integer getChatItemId(Integer sendId,Integer receiveId);
+&nbsp;
+&nbsp;    @Insert(&quot;INSERT INTO chat_item(mem_1, mem_2, newest_content, newest_time) VALUES(#{sendId}, #{receiveId}, #{content}, #{time})&quot;)
+&nbsp;    void addChatItem(Integer sendId, Integer receiveId, String content, LocalDateTime time);
+&nbsp;
+&nbsp;    @Insert(&quot;UPDATE chat_item SET newest_content=#{content}, newest_time=#{time} WHERE id=#{chatItemId}&quot;)
+&nbsp;    void updateChatItem(Integer chatItemId, String content, LocalDateTime time);
+&nbsp;
+&nbsp;    @Select(&quot;SELECT * FROM chat_item WHERE mem_1=#{userId} OR mem_2=#{userId}&quot;)
+&nbsp;    List&lt;ChatItem&gt; getAllChatItem(Integer userId);
+&nbsp;
+&nbsp;
+&nbsp;    @Select(&quot;SELECT CASE WHEN mem_1=#{sendId} THEN mem_2 WHEN mem_2=#{sendId} THEN mem_1 END FROM chat_item WHERE id=#{chatId}&quot;)
+&nbsp;    Integer getTheOtherId(Integer chatId, Integer sendId);
+&nbsp;
+&nbsp;    @Select(&quot;SELECT * FROM chat_item WHERE (mem_1 = #{userId} AND mem_2 = #{otherId}) OR (mem_1 = #{otherId} AND mem_2 = #{userId})&quot;)
+&nbsp;    ChatItem getChatItem(Integer userId, Integer otherId);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-18 17:31</div>
+</div>
+</body>
+</html>

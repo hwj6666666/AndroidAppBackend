@@ -25,15 +25,16 @@ Current scope:     <a href="../../index.html">all classes</a>
 <h1>Coverage Summary for Class: ClassController (org.example.jiaoji.controller)</h1>
 
 <table class="coverageStats">
+
 <tr>
   <th class="name">Class</th>
 <th class="coverageStat 
 ">
-  Class, %
+  Method, %
 </th>
 <th class="coverageStat 
 ">
-  Method, %
+  Branch, %
 </th>
 <th class="coverageStat 
 ">
@@ -47,6 +48,33 @@ Current scope:     <a href="../../index.html">all classes</a>
     100%
   </span>
   <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (13/13)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ClassController$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
     (1/1)
   </span>
 </td>
@@ -55,7 +83,18 @@ Current scope:     <a href="../../index.html">all classes</a>
     100%
   </span>
   <span class="absValue">
-    (5/5)
+    (1/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
   </span>
 </td>
 <td class="coverageStat">
@@ -63,11 +102,18 @@ Current scope:     <a href="../../index.html">all classes</a>
     100%
   </span>
   <span class="absValue">
-    (5/5)
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (14/14)
   </span>
 </td>
 </tr>
-
 </table>
 
 <br/>
@@ -79,6 +125,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;import org.springframework.web.bind.annotation.RestController;
 &nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.data.redis.core.StringRedisTemplate;
 &nbsp;import org.springframework.web.bind.annotation.CrossOrigin;
 &nbsp;import org.springframework.web.bind.annotation.GetMapping;
 &nbsp;import org.springframework.web.bind.annotation.PostMapping;
@@ -89,15 +136,30 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;import java.util.List;
 &nbsp;
+&nbsp;import com.alibaba.fastjson.JSON;
+&nbsp;import com.alibaba.fastjson.TypeReference;
+&nbsp;
 &nbsp;@RestController
 &nbsp;@CrossOrigin
 <b class="fc">&nbsp;public class ClassController {</b>
 &nbsp;    @Autowired
 &nbsp;    private ClassService classService;
+&nbsp;    @Autowired
+&nbsp;    private StringRedisTemplate stringRedisTemplate;
 &nbsp;
 &nbsp;    @GetMapping(&quot;/class&quot;)
 &nbsp;    public List&lt;Class&gt; getMethodName() {
-<b class="fc">&nbsp;        return classService.selectAll();</b>
+<b class="fc">&nbsp;       String key = &quot;class&quot;;</b>
+<b class="fc">&nbsp;         if (stringRedisTemplate.opsForValue().get(key) == null) {</b>
+<b class="fc">&nbsp;              List&lt;Class&gt; classes = classService.selectAll();</b>
+<b class="fc">&nbsp;              String json = JSON.toJSONString(classes);</b>
+<b class="fc">&nbsp;              stringRedisTemplate.opsForValue().set(key, json, 3600, java.util.concurrent.TimeUnit.SECONDS);</b>
+<b class="fc">&nbsp;              return classes;</b>
+&nbsp;         } else {
+<b class="fc">&nbsp;              String json = stringRedisTemplate.opsForValue().get(key);</b>
+<b class="fc">&nbsp;              List&lt;Class&gt; classes = JSON.parseObject(json, new TypeReference&lt;List&lt;Class&gt;&gt;() {});</b>
+<b class="fc">&nbsp;              return classes;</b>
+&nbsp;         }
 &nbsp;    }
 &nbsp;
 &nbsp;    @PostMapping(&quot;/class/addFavor&quot;)
@@ -139,7 +201,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2024-07-04 13:52</div>
+    <div style="float:right;">generated on 2024-07-18 17:31</div>
 </div>
 </body>
 </html>

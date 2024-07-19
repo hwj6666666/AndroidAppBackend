@@ -1,8 +1,15 @@
 name: CI/CD Pipeline
-# 16
+# 19
 on:
   push:
     branches: [ "main" ]
+    paths-ignore:
+      - '**/*.md'       # 忽略所有 Markdown 文件
+      - '**/*.txt'      # 忽略所有文本文件
+      - '**/docs/**'    # 忽略 docs 目录中的所有文件
+#      - '.github/**'
+      - 'databaseSQL/**'
+#      - 'scripts/**'
   pull_request:
     branches: [ "main" ]
 
@@ -31,10 +38,10 @@ jobs:
           path: jiaoji_backend/jiaoji/target/jiaoji-0.0.1-SNAPSHOT.jar # Update to the correct path
 
   deploy:
-   if: github.event_name == 'push'
-   runs-on: ubuntu-latest
-   needs: build-and-test
-   steps:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    steps:
      - uses: actions/checkout@v4  # Ensure all files, including scripts, are available
 
      - name: Install SSH key
@@ -49,17 +56,12 @@ jobs:
          path: target
 
      - name: Stop Application
-#       run: ssh -o StrictHostKeyChecking=no root@124.70.209.108 'bash -s' < ./scripts/stop-app.sh
-       run: ssh -o StrictHostKeyChecking=no root@124.70.209.108 'bash scripts/stop-app.sh'
+       run: ssh -o StrictHostKeyChecking=no root@121.36.220.232 'bash -s' < ./scripts/stop-app.sh
+      #  run: ssh -o StrictHostKeyChecking=no root@121.36.220.232 'bash scripts/stop-app.sh'
 
-#     - name: Copy files via SSH
-#       run: scp target/jiaoji-0.0.1-SNAPSHOT.jar root@124.70.209.108:/www/wwwroot/jiaoji
+     - name: Copy files via SSH
+       run: scp -o StrictHostKeyChecking=no target/jiaoji-0.0.1-SNAPSHOT.jar root@121.36.220.232:/www/wwwroot/jiaoji
 
      - name: Restart Application
-       env:
-         SPRING_DATASOURCE_URL: ${{ secrets.DB_URL }}
-         SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}
-         SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
-         SERVER_PORT: ${{ secrets.SERVER_PORT }}
-       run: ssh -o StrictHostKeyChecking=no root@124.70.209.108 'bash -s' < ./scripts/restart-app.sh
-        # run: ssh root@124.70.209.108 'bash scripts/restart-app.sh'
+       run: ssh -o StrictHostKeyChecking=no root@121.36.220.232 'bash -s' < ./scripts/restart-app.sh
+      #  run: ssh -o StrictHostKeyChecking=no root@121.36.220.232 'bash scripts/restart-app.sh'

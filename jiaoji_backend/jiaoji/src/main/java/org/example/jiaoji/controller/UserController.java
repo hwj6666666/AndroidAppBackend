@@ -67,7 +67,7 @@ public class UserController {
         List<Objects> objects = userService.SelectObjectsById(id);
         for (Objects object : objects) {
             object.setAveScore(objectService.getAveScore(object.getId()));
-            object.setHottestRemark(objectService.getHottestRemark(object.getId()).getContent());
+//            object.setHottestRemark(objectService.getHottestRemark(object.getId()).getContent());
         }
         return ResponseEntity.ok(objects);
     }
@@ -135,4 +135,5 @@ public class UserController {
   public RetType reset(@RequestBody User user) {
     return userService.reset(user.getEmail(), user.getPassword());
   }
+  // test for cicd 6
 }

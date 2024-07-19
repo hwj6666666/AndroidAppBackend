@@ -5,13 +5,18 @@ create table comments
     user_id      int          not null,
     remark_id    int          not null,
     content      varchar(100) null,
-    publish_time datetime     null
+    publish_time datetime     null,
+    constraint comments_remarks_id_fk
+        foreign key (remark_id) references remarks (id)
+            on update cascade on delete cascade,
+    constraint comments_user_id_fk
+        foreign key (user_id) references user (id)
+            on update cascade on delete cascade
 );
 
 INSERT INTO jiaoji.comments (id, user_id, remark_id, content, publish_time) VALUES (1, 3, 1, '感觉配不上5星', '2023-08-20 00:00:00');
 INSERT INTO jiaoji.comments (id, user_id, remark_id, content, publish_time) VALUES (2, 2, 3, '位置也没那么夸张吧', '2023-08-25 00:00:00');
 INSERT INTO jiaoji.comments (id, user_id, remark_id, content, publish_time) VALUES (3, 1, 5, '离我宿舍不近', '2024-01-06 00:00:00');
-INSERT INTO jiaoji.comments (id, user_id, remark_id, content, publish_time) VALUES (4, 3, 8, '还真是', '2024-04-12 00:00:00');
 INSERT INTO jiaoji.comments (id, user_id, remark_id, content, publish_time) VALUES (5, 2, 10, '绷', '2024-03-24 00:00:00');
 INSERT INTO jiaoji.comments (id, user_id, remark_id, content, publish_time) VALUES (6, 1, 12, '确实少了点', '2024-04-17 00:00:00');
 INSERT INTO jiaoji.comments (id, user_id, remark_id, content, publish_time) VALUES (7, 3, 13, '兄弟，你好香', '2024-02-10 00:00:00');
@@ -32,6 +37,3 @@ INSERT INTO jiaoji.comments (id, user_id, remark_id, content, publish_time) VALU
 INSERT INTO jiaoji.comments (id, user_id, remark_id, content, publish_time) VALUES (22, 3, 44, '还真是，一开始疯四还有点性价比', '2024-03-14 00:00:00');
 INSERT INTO jiaoji.comments (id, user_id, remark_id, content, publish_time) VALUES (23, 2, 46, '你牛你来开？', '2024-04-11 00:00:00');
 INSERT INTO jiaoji.comments (id, user_id, remark_id, content, publish_time) VALUES (24, 1, 48, '最喜欢下沉市场的一集', '2024-01-21 00:00:00');
-INSERT INTO jiaoji.comments (id, user_id, remark_id, content, publish_time) VALUES (25, 3, 50, '上市是这样的，先是叔叔现在是阿姨捏', '2024-01-18 00:00:00');
-INSERT INTO jiaoji.comments (id, user_id, remark_id, content, publish_time) VALUES (26, 2, 52, '看B站看的', '2024-02-10 00:00:00');
-INSERT INTO jiaoji.comments (id, user_id, remark_id, content, publish_time) VALUES (27, 1, 54, '我也', '2024-01-29 00:00:00');

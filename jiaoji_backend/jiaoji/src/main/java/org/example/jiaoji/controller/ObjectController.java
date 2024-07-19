@@ -1,5 +1,6 @@
 package org.example.jiaoji.controller;
 
+import com.github.pagehelper.PageInfo;
 import org.example.jiaoji.pojo.Objects;
 import org.example.jiaoji.pojo.RetType;
 import org.example.jiaoji.pojo.top3Object;
@@ -31,23 +32,25 @@ public class ObjectController {
 
     @GetMapping("/object/{id}")
     @ResponseBody
-    public ResponseEntity<List<Objects>> getObject(@PathVariable("id") Integer id) {
-        List<Objects> objects;
+    public ResponseEntity<PageInfo<Objects>> getObject(@PathVariable("id") Integer id,
+                                                       @RequestParam Integer pageIndex,
+                                                       @RequestParam Integer pageSize) {
+        System.out.println(pageSize);
+        PageInfo<Objects> objects;
         topicService.addViews(id);
         String key = "getObjectbyTopicId:" + id;
         if (stringRedisTemplate.opsForValue().get(key) == null) {
-        objects = objectService.SelectAllInTopic(id);
-//        for (Objects object : objects) {
-//            object.setHottestRemark(objectService.getHottestRemark(object.getId()));
-//        }
-        String json = JSON.toJSONString(objects);
-        stringRedisTemplate.opsForValue().set(key, json, 10, java.util.concurrent.TimeUnit.SECONDS);
-        return ResponseEntity.ok(objects);
-    }else {
-        String json = stringRedisTemplate.opsForValue().get(key);
-        objects = JSON.parseObject(json, new TypeReference<List<Objects>>() {});
-        return ResponseEntity.ok(objects);
-    }
+            objects = objectService.SelectAllInTopic(id, pageSize, pageIndex);
+            System.out.println(objects);
+            String json = JSON.toJSONString(objects);
+            stringRedisTemplate.opsForValue().set(key, json, 10, java.util.concurrent.TimeUnit.SECONDS);
+            return ResponseEntity.ok(objects);
+        }else {
+            String json = stringRedisTemplate.opsForValue().get(key);
+            objects = JSON.parseObject(json, new TypeReference<PageInfo<Objects>>() {});
+            System.out.println(objects);
+            return ResponseEntity.ok(objects);
+        }
     }
 
     @PostMapping("/object")
@@ -63,9 +66,6 @@ public class ObjectController {
             if (stringRedisTemplate.opsForValue().get(key) == null) {
         List<Objects> objects;
         objects = objectService.SelectById(id);
-//        for (Objects object : objects) {
-//            object.setHottestRemark(objectService.getHottestRemark(object.getId()));
-//        }
         String json = JSON.toJSONString(objects);
         stringRedisTemplate.opsForValue().set(key, json, 3600, java.util.concurrent.TimeUnit.SECONDS);
         return ResponseEntity.ok(objects);
@@ -82,20 +82,15 @@ public class ObjectController {
     public List<Objects> getObjectsByTopicId(@PathVariable("keyword") String keyword) {
         List<Objects> objects;
         objects =objectService.search(keyword);
-//        for (Objects object : objects) {
-//            object.setAveScore(objectService.getAveScore(object.getId()));
-//            object.setHottestRemark(objectService.getHottestRemark(object.getId()).getContent());
-//        }
         return objects;
     }
     @GetMapping("/object/top3/{topicId}")
     @ResponseBody
     public List<top3Object> getObjectsByTopicId(@PathVariable("topicId") Integer topicId) {
-        
         if(stringRedisTemplate.opsForValue().get("top3Object:" + topicId) == null) {
             List<top3Object> objects = objectService.SelectTop3(topicId);
             String json = JSON.toJSONString(objects);
-            stringRedisTemplate.opsForValue().set("top3Object:" + topicId, json, 3600, java.util.concurrent.TimeUnit.SECONDS);
+            stringRedisTemplate.opsForValue().set("top3Object:" + topicId, json, 600, java.util.concurrent.TimeUnit.SECONDS);
             return objects;
         }else {
             String json = stringRedisTemplate.opsForValue().get("top3Object:" + topicId);

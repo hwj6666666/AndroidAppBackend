@@ -1,7 +1,22 @@
 package org.example.jiaoji.service.serverimpl;
 
+import java.io.IOException;
+import java.io.ObjectOutput;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.alibaba.fastjson2.JSON;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.example.jiaoji.mapper.ObjectMapper;
 import org.example.jiaoji.mapper.RemarkMapper;
 import org.example.jiaoji.mapper.TopicMapper;
@@ -23,6 +38,8 @@ public class ObjectServiceImpl implements ObjectService {
     private TopicMapper topicMapper;
     @Autowired
     private RemarkMapper remarkMapper;
+    @Autowired
+    private RestHighLevelClient client;
 
     @Transactional
     public Integer InsertObject(Objects data) {
@@ -37,7 +54,6 @@ public class ObjectServiceImpl implements ObjectService {
         }
         Objects object = new Objects();
         object.setTitle(data.getTitle());
-        object.setId(data.getId());
         object.setDescription(data.getDescription());
         object.setUserId(data.getUserId());
         object.setPicture(data.getPicture());
@@ -50,6 +66,17 @@ public class ObjectServiceImpl implements ObjectService {
         Topic topic = objectMapper.selectTopicById(object.getTopicId());
         topicMapper.updateObjectNum(topic.getObjectNum() + 1, topic.getId());
         objectMapper.insert(object);
+        remarkMapper.insertScore(object.getId());
+        IndexRequest request = new IndexRequest("object").id(object.getId().toString());
+
+        // 2.准备Json文档
+        request.source(JSON.toJSONString(object), XContentType.JSON);
+        // 3.发送请求
+        try {
+            client.index(request, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         ret.setMsg("上传成功");
 
         ret.setOk(true);
@@ -57,9 +84,11 @@ public class ObjectServiceImpl implements ObjectService {
         return object.getId();
     }
 
-    public List<Objects> SelectAllInTopic(Integer id) {
+    public PageInfo<Objects> SelectAllInTopic(Integer id, Integer pageSize, Integer pageIndex) {
+        PageHelper.startPage(pageIndex, pageSize);
         List<Objects> objects = objectMapper.selectAllInTopic(id);
-        return objects;
+        PageInfo<Objects> pageInfo = new PageInfo<>(objects);
+        return pageInfo;
     }
 
     public List<Objects> SelectById(Integer id) {
@@ -97,8 +126,29 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     public List<Objects> search(String keyword) {
-        keyword = "%" + keyword + "%";
-        return objectMapper.search(keyword);
+//        keyword = "%" + keyword + "%";
+//        return objectMapper.search(keyword);
+        List<Objects> objects = new ArrayList<>();
+        SearchRequest request = new SearchRequest("object");
+        // 组织DSL参数
+        request.source()
+                .query(QueryBuilders.matchQuery(keyword, "title"));
+        request.source().from(0).size(100);
+        SearchResponse response = null;
+        try {
+            response = client.search(request, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        SearchHits searchHits = response.getHits();
+        SearchHit[] hits = searchHits.getHits();
+        for (SearchHit hit : hits) {
+            String json = hit.getSourceAsString();
+            Objects object = JSON.parseObject(json, Objects.class);
+            System.out.println(object);
+            objects.add(object);
+        }
+        return objects;
     }
 
     public List<top3Object> SelectTop3(Integer topicId) {
@@ -124,35 +174,49 @@ public class ObjectServiceImpl implements ObjectService {
     public void updateAveScore(Integer id, Integer score) {
         Objects object = objectMapper.selectOneById(id);
         Integer remarkNum = object.getRemarkNum();
-        double newScore = (object.getAveScore() * remarkNum + score)/(remarkNum + 1);
+        double newScore = (object.getAveScore() * remarkNum + score) / (remarkNum + 1);
         objectMapper.updateAveScore(newScore, remarkNum + 1, id);
     }
 
     public void decAveScore(Integer id, Integer score) {
         Objects object = objectMapper.selectOneById(id);
         Integer remarkNum = object.getRemarkNum();
-        double newScore = (object.getAveScore() * remarkNum - score)/(remarkNum - 1);
+        double newScore = 0;
+        if (remarkNum > 1) newScore = (object.getAveScore() * remarkNum - score) / (remarkNum - 1);
         objectMapper.updateAveScore(newScore, remarkNum - 1, id);
     }
 
     public void updateHotComment(Integer id, Integer remark_id, Integer change) {
         Objects object = objectMapper.selectOneById(id);
         Integer old_remark_id = object.getRemarkId();
-        if(old_remark_id.equals(0)){
-            Remark remark =remarkMapper.selectById(remark_id).getFirst();
+        if (old_remark_id.equals(0)) {
+            List<Remark> remarks = remarkMapper.selectById(remark_id);
+            if (remarks == null || remarks.isEmpty()) {
+                return;
+            }
+            Remark remark = remarks.getFirst();
             objectMapper.updateHotComment(id, remark.getContent(), remark_id);
             return;
         }
-        if(old_remark_id.equals(remark_id)) {
-            if(change < 0){
+        if (old_remark_id.equals(remark_id)) {
+            if (change < 0) {
                 Remark remark = getHottestRemark(id);
-                if(remark != null) objectMapper.updateHotComment(object.getId(), remark.getContent(), remark.getId());
+                if (remark != null) objectMapper.updateHotComment(object.getId(), remark.getContent(), remark.getId());
                 else objectMapper.updateHotComment(id, "", 0);
             }
-        }else{
-            Remark old_remark = remarkMapper.selectById(old_remark_id).getFirst();
-            Remark remark = remarkMapper.selectById(remark_id).getFirst();
-            if(old_remark.getLike() < remark.getLike()){
+        } else {
+            List<Remark> old_remarks = remarkMapper.selectById(old_remark_id);
+            List<Remark> remarks = remarkMapper.selectById(remark_id);
+            if (remarks == null || remarks.isEmpty()) {
+                return;
+            }
+            Remark remark = remarks.getFirst();
+            if (old_remarks == null || old_remarks.isEmpty()) {
+                objectMapper.updateHotComment(id, remark.getContent(), remark_id);
+                return;
+            }
+            Remark old_remark = old_remarks.getFirst();
+            if (old_remark.getLike() < remark.getLike()) {
                 objectMapper.updateHotComment(id, remark.getContent(), remark_id);
             }
         }

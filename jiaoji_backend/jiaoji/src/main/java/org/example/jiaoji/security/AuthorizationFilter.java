@@ -57,56 +57,60 @@ public class AuthorizationFilter implements Filter {
 
         System.out.println("Request URI: " + requestURI);
 
-        if (isExcluded(requestURI)) {
-            filterChain.doFilter(servletRequest, servletResponse);
-        } else {
-            String token;
-            if ((token = request.getHeader("Authorization")) == null) {
-                System.out.println("No token request!");
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "请先登录获取token");
-                return;
-            }
+        //压力测试
+        filterChain.doFilter(servletRequest, servletResponse);
+        return;
 
-            if (!token.startsWith("woshinengdie:_")) {
-                System.out.println("Not Jiao Ji token!");
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Not Jiao Ji token!");
-                return;
-            }
-
-            token = token.replaceFirst("woshinengdie:_", "");
-
-            if (JWTUtil.verify(token, SECRET_KEY)) {
-                JWTValidator validator = JWTValidator.of(JWTUtil.parseToken(token));
-                try {
-                    validator.validateDate();
-                } catch (ValidateException e) {
-                    System.out.println("Token should be updated!");
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token过期，请重新登录");
-                    return;
-                }
-
-                JWT parsedToken = JWTUtil.parseToken(token);
-
-                if (!parsedToken.getPayloads().getStr("ip").equals(request.getRemoteAddr())) {
-                    System.out.println("ip check failed!");
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "ip check failed!");
-                    return;
-                }
-
-                if (userMapper.selectIdByEmail(parsedToken.getPayloads().getStr("email")) == null) {
-                    System.out.println("email check failed!");
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "email check failed!");
-                    return;
-                }
-
-                System.out.println("Token verified successfully");
-                filterChain.doFilter(servletRequest, servletResponse);
-            } else {
-                System.out.println("Unauthorized access");
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "token验证失败");
-                return;
-            }
-        }
+//        if (isExcluded(requestURI)) {
+//            filterChain.doFilter(servletRequest, servletResponse);
+//        } else {
+//            String token;
+//            if ((token = request.getHeader("Authorization")) == null) {
+//                System.out.println("No token request!");
+//                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "请先登录获取token");
+//                return;
+//            }
+//
+//            if (!token.startsWith("woshinengdie:_")) {
+//                System.out.println("Not Jiao Ji token!");
+//                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Not Jiao Ji token!");
+//                return;
+//            }
+//
+//            token = token.replaceFirst("woshinengdie:_", "");
+//
+//            if (JWTUtil.verify(token, SECRET_KEY)) {
+//                JWTValidator validator = JWTValidator.of(JWTUtil.parseToken(token));
+//                try {
+//                    validator.validateDate();
+//                } catch (ValidateException e) {
+//                    System.out.println("Token should be updated!");
+//                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token过期，请重新登录");
+//                    return;
+//                }
+//
+//                JWT parsedToken = JWTUtil.parseToken(token);
+//
+//                if (!parsedToken.getPayloads().getStr("ip").equals(request.getRemoteAddr())) {
+//                    System.out.println("ip check failed!");
+//                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "ip check failed!");
+//                    return;
+//                }
+//
+//                if (userMapper.selectIdByEmail(parsedToken.getPayloads().getStr("email")) == null) {
+//                    System.out.println("email check failed!");
+//                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "email check failed!");
+//                    return;
+//                }
+//
+//                System.out.println("Token verified successfully");
+//                filterChain.doFilter(servletRequest, servletResponse);
+//            } else {
+//                System.out.println("Unauthorized access");
+//                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "token验证失败");
+//                return;
+//            }
+//        }
     }
 
     private boolean isExcluded(String path) {

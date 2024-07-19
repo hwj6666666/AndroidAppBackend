@@ -135,5 +135,5 @@ public class UserController {
   public RetType reset(@RequestBody User user) {
     return userService.reset(user.getEmail(), user.getPassword());
   }
-  // test for cicd 6
+  // test for cicd 7
 }

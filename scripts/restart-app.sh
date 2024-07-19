@@ -2,14 +2,8 @@
 
 # 确保 Java 在 PATH 中
 # which java
-export JAVA_HOME=/root/java/jdk-22.0.2
-export PATH=$JAVA_HOME/bin:$PATH
-
-# 使用环境变量配置
-#export SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/jiaoji
-#export SPRING_DATASOURCE_USERNAME=jiaoji
-#export SPRING_DATASOURCE_PASSWORD=':ex.RSTcgF3M!Ls'
-#export SERVER_PORT=6981
+# export JAVA_HOME=/root/java/jdk-22.0.2
+# export PATH=$JAVA_HOME/bin:$PATH
 
 # 检查 Java 是否可用
 if ! command -v java &> /dev/null; then

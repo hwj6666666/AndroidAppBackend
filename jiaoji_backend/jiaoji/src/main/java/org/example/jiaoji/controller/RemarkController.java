@@ -1,19 +1,23 @@
 package org.example.jiaoji.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.github.pagehelper.PageInfo;
+
 import org.example.jiaoji.pojo.Remark;
 import org.example.jiaoji.pojo.RetType;
 import org.example.jiaoji.pojo.User;
 import org.example.jiaoji.service.RemarkService;
+import org.example.jiaoji.utils.KafkaProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.TypeReference;
 
 @RestController
 @CrossOrigin
@@ -22,6 +26,8 @@ public class RemarkController {
     private RemarkService remarkService;
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    private KafkaProducerService kfkproducer;
 
     //takes 10s
     @GetMapping("/remarks/{objectId}")
@@ -38,6 +44,7 @@ public class RemarkController {
 
     @GetMapping("/remarks/score/{objectId}")
     public ResponseEntity<List<Integer>> getScore(@PathVariable("objectId") Integer objectId) {
+
         String key="ObjScore:"+objectId;
         if (stringRedisTemplate.opsForValue().get(key) == null) {
             List<Integer> scores = remarkService.getScore(objectId);
@@ -55,7 +62,12 @@ public class RemarkController {
     @GetMapping("/remarks/changeLike/{id}/{change}/{uid}")
     public RetType changeLike(@PathVariable("id") Integer id, @PathVariable("change") Integer change,
             @PathVariable("uid") Integer uid) {
-        return remarkService.changeLike(id, change, uid);
+            Map<String, Integer> map = new HashMap<>();
+            map.put("uid", uid);
+            map.put("id", id);
+            map.put("change", change);
+            kfkproducer.sendMessage("RemarkchangeLike", map);
+        return new RetType(true, "修改点赞状态成功", null);
     }
 
     @GetMapping("/remarks/delete/{id}")

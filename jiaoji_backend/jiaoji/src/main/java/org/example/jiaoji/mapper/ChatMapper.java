@@ -6,7 +6,6 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.example.jiaoji.pojo.Chat;
-import org.example.jiaoji.pojo.ChatItem;
 
 @Mapper
 public interface ChatMapper {

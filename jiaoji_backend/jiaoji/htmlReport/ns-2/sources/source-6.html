@@ -1,0 +1,89 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > ChatService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.example.jiaoji.service</a>
+</div>
+
+<h1>Coverage Summary for Class: ChatService (org.example.jiaoji.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">ChatService</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.example.jiaoji.service;
+&nbsp;
+&nbsp;import org.example.jiaoji.pojo.Chat;
+&nbsp;import org.example.jiaoji.pojo.ChatItem;
+&nbsp;import org.example.jiaoji.pojo.ChatItemResponse;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;public interface ChatService {
+&nbsp;
+&nbsp;  void addChat(Chat chat);
+&nbsp;
+&nbsp;  //    List&lt;Chat&gt; getAllChatWith(Integer sendId, Integer receiveId);
+&nbsp;  List&lt;Chat&gt; getAllChatWith(Integer id);
+&nbsp;
+&nbsp;  List&lt;ChatItem&gt; getAllChatItem(Integer userId);
+&nbsp;
+&nbsp;  Integer getTheOtherId(Integer chatItemId, Integer sendId);
+&nbsp;
+&nbsp;  ChatItemResponse getChatItem(Integer userId, Integer otherId);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-18 17:31</div>
+</div>
+</body>
+</html>

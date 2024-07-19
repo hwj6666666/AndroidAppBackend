@@ -1,0 +1,288 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > UserController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.example.jiaoji.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: UserController (org.example.jiaoji.controller)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/38)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">UserController$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/39)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.example.jiaoji.controller;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;import com.alibaba.fastjson.JSON;
+&nbsp;import com.alibaba.fastjson.TypeReference;
+&nbsp;import org.example.jiaoji.pojo.Objects;
+&nbsp;import org.example.jiaoji.pojo.Remark;
+&nbsp;import org.example.jiaoji.pojo.RetType;
+&nbsp;import org.example.jiaoji.pojo.Topic;
+&nbsp;import org.example.jiaoji.pojo.User;
+&nbsp;import org.example.jiaoji.service.ObjectService;
+&nbsp;import org.example.jiaoji.service.UserService;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.data.redis.core.StringRedisTemplate;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@CrossOrigin
+<b class="nc">&nbsp;public class UserController {</b>
+&nbsp;  @Autowired private UserService userService;
+&nbsp;
+&nbsp;  @Autowired private ObjectService objectService;
+&nbsp;
+&nbsp;  @Autowired
+&nbsp;  private StringRedisTemplate stringRedisTemplate;
+&nbsp;
+&nbsp;    //takes 5s
+&nbsp;    @GetMapping(&quot;/user&quot;)
+&nbsp;    @ResponseBody
+&nbsp;    public ResponseEntity&lt;List&lt;User&gt;&gt; getAllUser() {
+<b class="nc">&nbsp;        List&lt;User&gt; users = userService.SelectAll();</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(users);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;  @GetMapping(&quot;/user/{id}&quot;)
+&nbsp;  @ResponseBody
+&nbsp;  public ResponseEntity&lt;User&gt; getUserById(@PathVariable(&quot;id&quot;) Integer id) {
+<b class="nc">&nbsp;      String key=&quot;userInfo&quot;+id;</b>
+<b class="nc">&nbsp;    if (stringRedisTemplate.opsForValue().get(key) == null) {</b>
+<b class="nc">&nbsp;      User user = userService.SelectByUserId(id);</b>
+<b class="nc">&nbsp;      String json = JSON.toJSONString(user);</b>
+<b class="nc">&nbsp;      stringRedisTemplate.opsForValue().set(key, json, 3600, java.util.concurrent.TimeUnit.SECONDS);</b>
+<b class="nc">&nbsp;      return ResponseEntity.ok(user);</b>
+&nbsp;    }
+&nbsp;    else {
+<b class="nc">&nbsp;      String json = stringRedisTemplate.opsForValue().get(key);</b>
+<b class="nc">&nbsp;      User user = JSON.parseObject(json, new TypeReference&lt;User&gt;() {});</b>
+<b class="nc">&nbsp;      return ResponseEntity.ok(user);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  @GetMapping(&quot;/user/{id}/topics&quot;)
+&nbsp;  @ResponseBody
+&nbsp;  public ResponseEntity&lt;List&lt;Topic&gt;&gt; getTopicsById(@PathVariable(&quot;id&quot;) Integer id) {
+<b class="nc">&nbsp;    List&lt;Topic&gt; topics = userService.SelectTopicsById(id);</b>
+<b class="nc">&nbsp;    return ResponseEntity.ok(topics);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;    //takes 7s
+&nbsp;    @GetMapping(&quot;/user/{id}/objects&quot;)
+&nbsp;    @ResponseBody
+&nbsp;    public ResponseEntity&lt;List&lt;Objects&gt;&gt; getObjectsById(@PathVariable(&quot;id&quot;) Integer id) {
+<b class="nc">&nbsp;        List&lt;Objects&gt; objects = userService.SelectObjectsById(id);</b>
+<b class="nc">&nbsp;        for (Objects object : objects) {</b>
+<b class="nc">&nbsp;            object.setAveScore(objectService.getAveScore(object.getId()));</b>
+<b class="nc">&nbsp;            object.setHottestRemark(objectService.getHottestRemark(object.getId()).getContent());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return ResponseEntity.ok(objects);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;  @GetMapping(&quot;/user/{id}/remarks&quot;)
+&nbsp;  @ResponseBody
+&nbsp;  public ResponseEntity&lt;List&lt;Remark&gt;&gt; getRemarksById(@PathVariable(&quot;id&quot;) Integer id) {
+<b class="nc">&nbsp;    List&lt;Remark&gt; remark = userService.SelectRemarksById(id);</b>
+<b class="nc">&nbsp;    return ResponseEntity.ok(remark);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @GetMapping(&quot;/user/{id}/follows&quot;)
+&nbsp;  @ResponseBody
+&nbsp;  public ResponseEntity&lt;List&lt;Topic&gt;&gt; getFollows(@PathVariable(&quot;id&quot;) Integer id) {
+<b class="nc">&nbsp;    List&lt;Topic&gt; follow = userService.SelectFollows(id);</b>
+<b class="nc">&nbsp;    return ResponseEntity.ok(follow);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @PutMapping(&quot;/user/{id}&quot;)
+&nbsp;  public ResponseEntity&lt;User&gt; updateUser(@PathVariable(&quot;id&quot;) Integer id, @RequestBody User user) {
+<b class="nc">&nbsp;    User updatedUser = userService.updateUser(id, user);</b>
+&nbsp;    //        updatedUser.setPassword(&quot;&quot;);
+<b class="nc">&nbsp;    if (updatedUser == null) {</b>
+<b class="nc">&nbsp;      return ResponseEntity.notFound().build();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return ResponseEntity.ok(updatedUser);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @PutMapping(&quot;/psd/{id}&quot;)
+&nbsp;  public ResponseEntity&lt;User&gt; updatePsd(@PathVariable(&quot;id&quot;) Integer id, @RequestBody User user) {
+<b class="nc">&nbsp;    User updatedPsdUser = userService.updatePsd(id, user);</b>
+&nbsp;    //        暂时直接返回
+&nbsp;    //        updatedPsdUser.setPassword(&quot;&quot;);
+<b class="nc">&nbsp;    return ResponseEntity.ok(updatedPsdUser);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @GetMapping(&quot;/user/object/{id}/nameAndTopic&quot;)
+&nbsp;  @ResponseBody
+&nbsp;  public ResponseEntity&lt;Map&lt;String, String&gt;&gt; getObjectNameAndTopicNameById(
+&nbsp;      @PathVariable(&quot;id&quot;) Integer id) {
+<b class="nc">&nbsp;    Map&lt;String, String&gt; result = userService.getObjectNameAndTopicNameById(id);</b>
+<b class="nc">&nbsp;    if (result == null || result.isEmpty()) {</b>
+<b class="nc">&nbsp;      return ResponseEntity.notFound().build();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return ResponseEntity.ok(result);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @GetMapping(&quot;user/search/{keyword}&quot;)
+&nbsp;  public List&lt;User&gt; getMethodName(@PathVariable(&quot;keyword&quot;) String keyword) {
+<b class="nc">&nbsp;    return userService.search(keyword);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @GetMapping(&quot;user/ban/{id}&quot;)
+&nbsp;  public RetType ban(@PathVariable(&quot;id&quot;) Integer id) {
+<b class="nc">&nbsp;    return userService.banUser(id);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @GetMapping(&quot;user/name/{name}&quot;)
+&nbsp;  public Boolean checkNameExist(@PathVariable String name) {
+<b class="nc">&nbsp;    System.out.println(&quot;checkNameExist&quot; + userService.checkNameExist(name));</b>
+<b class="nc">&nbsp;    return userService.checkNameExist(name);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @PostMapping(&quot;user/reset&quot;)
+&nbsp;  public RetType reset(@RequestBody User user) {
+<b class="nc">&nbsp;    return userService.reset(user.getEmail(), user.getPassword());</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-18 17:31</div>
+</div>
+</body>
+</html>

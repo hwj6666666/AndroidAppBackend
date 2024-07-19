@@ -1,7 +1,19 @@
 package org.example.jiaoji.service.serverimpl;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.alibaba.fastjson.JSON;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.example.jiaoji.mapper.ObjectMapper;
 import org.example.jiaoji.mapper.TopicMapper;
 import org.example.jiaoji.pojo.Objects;
@@ -39,6 +51,8 @@ public class TopicServiceImpl implements TopicService {
     private ObjectMapper objectMapper;
     @Autowired
     private ObjectService objectService;
+    @Autowired
+    private RestHighLevelClient client;
 
     public RetType insertTopic(Topic data) {
         RetType ret = new RetType();
@@ -60,6 +74,15 @@ public class TopicServiceImpl implements TopicService {
         topic.setPublicTime(java.time.LocalDateTime.now());
         topic.setBase64(data.getBase64());
         topicMapper.insert(topic);
+        IndexRequest request = new IndexRequest("topic").id(topic.getId().toString());
+        // 2.准备Json文档
+        request.source(JSON.toJSONString(topic), XContentType.JSON);
+        // 3.发送请求
+        try {
+            client.index(request, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         ret.setMsg("上传成功");
         ret.setOk(true);
         ret.setData(topicMapper.selectByTitle(topic.getTitle()));
@@ -115,9 +138,30 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public PageInfo<Topic> search(String keyword, Integer pageSize, Integer pageIndex) {
-        keyword = "%" + keyword + "%";
-        PageHelper.startPage(pageIndex, pageSize);
-        List<Topic> topics = topicMapper.search(keyword);
+//        keyword = "%" + keyword + "%";
+//        PageHelper.startPage(pageIndex, pageSize);
+//        List<Topic> topics = topicMapper.search(keyword);
+//        PageInfo<Topic> pageInfo = new PageInfo<>(topics);
+//        return pageInfo;
+        List<Topic> topics = new ArrayList<>();
+        SearchRequest request = new SearchRequest("topic");
+        // 组织DSL参数
+        request.source()
+                .query(QueryBuilders.multiMatchQuery(keyword, "title", "introduction"));
+        request.source().from((pageIndex - 1) * pageSize).size(pageSize);
+        SearchResponse response = null;
+        try {
+            response = client.search(request, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        SearchHits searchHits = response.getHits();
+        SearchHit[] hits = searchHits.getHits();
+        for(SearchHit hit : hits) {
+            String json = hit.getSourceAsString();
+            Topic topic = JSON.parseObject(json, Topic.class);
+            topics.add(topic);
+        }
         PageInfo<Topic> pageInfo = new PageInfo<>(topics);
         return pageInfo;
     }

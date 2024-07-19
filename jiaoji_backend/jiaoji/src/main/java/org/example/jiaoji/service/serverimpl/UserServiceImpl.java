@@ -1,7 +1,20 @@
 package org.example.jiaoji.service.serverimpl;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import com.alibaba.fastjson.JSON;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.example.jiaoji.mapper.UserMapper;
 import org.example.jiaoji.pojo.*;
 import org.example.jiaoji.security.PasswordEncoder;
@@ -13,6 +26,8 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
   @Autowired private UserMapper userMapper;
+  @Autowired
+  private RestHighLevelClient client;
 
   public List<User> SelectAll() {
     return userMapper.selectAll();
@@ -42,7 +57,18 @@ public class UserServiceImpl implements UserService {
   public User updateUser(Integer id, User user) {
     user.setId(id);
     userMapper.update(user);
-    return userMapper.selectByUserId(id);
+    User newuser = userMapper.selectByUserId(id);
+    IndexRequest request = new IndexRequest("user").id(newuser.getId().toString());
+
+    // 2.准备Json文档
+    request.source(JSON.toJSONString(user), XContentType.JSON);
+    // 3.发送请求
+      try {
+          client.index(request, RequestOptions.DEFAULT);
+      } catch (IOException e) {
+          throw new RuntimeException(e);
+      }
+      return newuser;
   }
 
 
@@ -73,8 +99,20 @@ public class UserServiceImpl implements UserService {
     String salt=PasswordEncoder.generateRandomSalt();
     String encodedPassword=PasswordEncoder.encode(password,salt);
     userMapper.insertPassword(email,id,salt,encodedPassword);
+    User user=userMapper.selectByUserId(id);
 
-    retType.setData(id);
+    IndexRequest request = new IndexRequest("user").id(id.toString());
+
+    // 2.准备Json文档
+    request.source(JSON.toJSONString(user), XContentType.JSON);
+    // 3.发送请求
+      try {
+          client.index(request, RequestOptions.DEFAULT);
+      } catch (IOException e) {
+          throw new RuntimeException(e);
+      }
+
+      retType.setData(id);
     retType.setMsg("注册成功");
     retType.setOk(true);
     return retType;
@@ -111,8 +149,33 @@ public class UserServiceImpl implements UserService {
   }
 
   public List<User> search(String keyword) {
-    keyword = "%" + keyword + "%";
-    return userMapper.search(keyword);
+//    System.out.println(keyword);
+//    keyword = "%" + keyword + "%";
+//    return userMapper.search(keyword);
+    List<User> users = new ArrayList<>();
+    SearchRequest request = new SearchRequest("user");
+
+    request.source()
+            .query(QueryBuilders.boolQuery()
+                    .should(QueryBuilders.termQuery("email", keyword)) // 精确匹配 email
+                    .should(QueryBuilders.matchQuery("username", keyword)) // 全文搜索 username
+            );
+    request.source().from(0).size(100);
+    SearchResponse response = null;
+    try {
+      response = client.search(request, RequestOptions.DEFAULT);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+
+    SearchHits searchHits = response.getHits();
+    SearchHit[] hits = searchHits.getHits();
+    for (SearchHit hit : hits) {
+      String json = hit.getSourceAsString();
+      User user = JSON.parseObject(json, User.class);
+      users.add(user);
+    }
+    return users;
   }
 
   public RetType banUser(Integer id) {

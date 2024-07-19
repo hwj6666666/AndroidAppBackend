@@ -10,6 +10,9 @@ import org.example.jiaoji.pojo.top3Object;
 
 @Mapper
 public interface ObjectMapper {
+    @Select("select * from object") // 由于这里是用的注解，所以不需要写xml文件，但需要将原来的xml文件删除，不然会报错
+    public List<Objects> selectAll();
+
     @Select("select * from object where topic_id = #{id}")
     public List<Objects> selectAllInTopic(Integer id);
 

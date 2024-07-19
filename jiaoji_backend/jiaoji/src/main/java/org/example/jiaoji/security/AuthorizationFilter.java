@@ -42,6 +42,9 @@ public class AuthorizationFilter implements Filter {
         EXCLUDED_PATHS.add("/topic");
         EXCLUDED_PATHS.add("/object");
         EXCLUDED_PATHS.add("/refresh/token");
+        EXCLUDED_PATHS.add("/topic/search/{keyword}");
+        EXCLUDED_PATHS.add("/object/search/{keyword}");
+        EXCLUDED_PATHS.add("/user/search");
         System.out.println("filter initialized");
     }
 
@@ -53,7 +56,6 @@ public class AuthorizationFilter implements Filter {
         String requestURI = request.getRequestURI();
 
         System.out.println("Request URI: " + requestURI);
-//        System.out.println("Is excluded: " + isExcluded(requestURI));
 
         if (isExcluded(requestURI)) {
             filterChain.doFilter(servletRequest, servletResponse);

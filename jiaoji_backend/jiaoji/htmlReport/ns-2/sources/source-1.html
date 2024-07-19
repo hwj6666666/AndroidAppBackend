@@ -1,0 +1,155 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > MailService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.example.jiaoji.service</a>
+</div>
+
+<h1>Coverage Summary for Class: MailService (org.example.jiaoji.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MailService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (11/11)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.example.jiaoji.service;
+&nbsp;
+&nbsp;import org.example.jiaoji.mapper.UserMapper;
+&nbsp;import org.example.jiaoji.pojo.MailStructure;
+&nbsp;import org.example.jiaoji.pojo.RetType;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.mail.SimpleMailMessage;
+&nbsp;import org.springframework.mail.javamail.JavaMailSender;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;public class MailService {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private JavaMailSender mailSender;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private UserMapper userMapper;
+&nbsp;
+&nbsp;    @Value(&quot;${spring.mail.username}&quot;)
+&nbsp;    private String fromMail;
+&nbsp;
+&nbsp;    public Boolean sendMain(String mail, MailStructure mailStructure, boolean isRegister) {
+<b class="fc">&nbsp;        if (isRegister) {</b>
+<b class="fc">&nbsp;            Integer id = userMapper.selectIdByEmail(mail);</b>
+<b class="fc">&nbsp;            if (id != null) return false;</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();</b>
+<b class="fc">&nbsp;        simpleMailMessage.setFrom(fromMail);</b>
+<b class="fc">&nbsp;        simpleMailMessage.setSubject(mailStructure.getSubject());</b>
+<b class="fc">&nbsp;        simpleMailMessage.setText(mailStructure.getMessage());</b>
+<b class="fc">&nbsp;        simpleMailMessage.setTo(mail);</b>
+&nbsp;
+<b class="fc">&nbsp;        mailSender.send(simpleMailMessage);</b>
+<b class="fc">&nbsp;        return true;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-18 17:31</div>
+</div>
+</body>
+</html>

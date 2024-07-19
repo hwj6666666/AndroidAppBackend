@@ -44,26 +44,26 @@ Current scope:     <a href="../../index.html">all classes</a>
   <td class="name">LoginController</td>
 <td class="coverageStat">
   <span class="percent">
-    100%
+    0%
   </span>
   <span class="absValue">
-    (1/1)
+    (0/1)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    100%
+    0%
   </span>
   <span class="absValue">
-    (3/3)
+    (0/5)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    100%
+    0%
   </span>
   <span class="absValue">
-    (3/3)
+    (0/57)
   </span>
 </td>
 </tr>
@@ -77,32 +77,120 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package org.example.jiaoji.controller;
 &nbsp;
+&nbsp;import cn.hutool.core.exceptions.ValidateException;
+&nbsp;import cn.hutool.jwt.JWT;
+&nbsp;import cn.hutool.jwt.JWTUtil;
+&nbsp;import cn.hutool.jwt.JWTValidator;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import org.apache.shiro.SecurityUtils;
+&nbsp;import org.apache.shiro.authc.AuthenticationException;
+&nbsp;import org.apache.shiro.authc.AuthenticationToken;
+&nbsp;import org.apache.shiro.authc.UsernamePasswordToken;
+&nbsp;import org.apache.shiro.subject.Subject;
+&nbsp;import org.example.jiaoji.mapper.UserMapper;
 &nbsp;import org.example.jiaoji.pojo.RetType;
 &nbsp;import org.example.jiaoji.pojo.User;
 &nbsp;import org.example.jiaoji.service.UserService;
 &nbsp;import org.springframework.beans.factory.annotation.Autowired;
-&nbsp;import org.springframework.web.bind.annotation.CrossOrigin;
-&nbsp;import org.springframework.web.bind.annotation.PostMapping;
-&nbsp;import org.springframework.web.bind.annotation.RequestBody;
-&nbsp;import org.springframework.web.bind.annotation.RestController;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.nio.charset.StandardCharsets;
+&nbsp;import java.util.Date;
+&nbsp;import java.util.Map;
 &nbsp;
 &nbsp;@RestController
 &nbsp;@CrossOrigin
-<b class="fc">&nbsp;public class LoginController {</b>
-&nbsp;    
+<b class="nc">&nbsp;public class LoginController {</b>
 &nbsp;    @Autowired
 &nbsp;    private UserService userService;
 &nbsp;
+&nbsp;    @Autowired
+&nbsp;    private UserMapper userMapper;
+&nbsp;
+<b class="nc">&nbsp;    private static final byte[] SECRET_KEY = &quot;MyConstant.JWT_SIGN_KEY&quot;.getBytes(StandardCharsets.UTF_8);</b>
+&nbsp;
 &nbsp;    @PostMapping(&quot;/user/login&quot;)
-&nbsp;    public RetType postMethodName(@RequestBody User user) {
-<b class="fc">&nbsp;        return userService.Login(user.getEmail(), user.getPassword());</b>
+&nbsp;    public RetType postMethodName(@RequestBody User user, HttpServletRequest request) {
+<b class="nc">&nbsp;        System.out.println(&quot;login&quot;);</b>
+<b class="nc">&nbsp;        System.out.println(user);</b>
+<b class="nc">&nbsp;        RetType res = new RetType();</b>
+<b class="nc">&nbsp;        res.setData(null);</b>
+&nbsp;
+<b class="nc">&nbsp;        Subject subject = SecurityUtils.getSubject();</b>
+<b class="nc">&nbsp;        AuthenticationToken shiroToken = new UsernamePasswordToken(user.getEmail(), user.getPassword());</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            subject.login(shiroToken);</b>
+&nbsp;
+<b class="nc">&nbsp;            String clientIp = request.getRemoteAddr();</b>
+<b class="nc">&nbsp;            String accessToken = JWT.create().</b>
+<b class="nc">&nbsp;                    setPayload(&quot;email&quot;, user.getEmail()).</b>
+<b class="nc">&nbsp;                    setPayload(&quot;ip&quot;, clientIp).</b>
+<b class="nc">&nbsp;                    setExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 10)).</b>
+<b class="nc">&nbsp;                    setKey(SECRET_KEY).sign();</b>
+&nbsp;
+<b class="nc">&nbsp;            String refreshToken = JWT.create().</b>
+<b class="nc">&nbsp;                    setPayload(&quot;email&quot;, user.getEmail()).</b>
+<b class="nc">&nbsp;                    setPayload(&quot;ip&quot;, clientIp).</b>
+<b class="nc">&nbsp;                    setExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7)).</b>
+<b class="nc">&nbsp;                    setKey(SECRET_KEY).sign();</b>
+&nbsp;
+<b class="nc">&nbsp;            res.setMsg(&quot;登录成功！&quot;);</b>
+<b class="nc">&nbsp;            res.setOk(true);</b>
+<b class="nc">&nbsp;            res.setData(Map.of(&quot;uid&quot;, userMapper.selectIdByEmail(user.getEmail()), &quot;refreshToken&quot;, refreshToken,</b>
+&nbsp;                    &quot;accessToken&quot;, accessToken));
+<b class="nc">&nbsp;        } catch (AuthenticationException e) {</b>
+<b class="nc">&nbsp;            res.setOk(false);</b>
+<b class="nc">&nbsp;            res.setMsg(e.getMessage());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        System.out.println(res.getData());</b>
+<b class="nc">&nbsp;        return res;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/refresh/token&quot;)
+&nbsp;    public RetType refreshToken(@RequestBody String refreshToken) {
+<b class="nc">&nbsp;        RetType res = new RetType();</b>
+<b class="nc">&nbsp;        System.out.println(&quot;Refreshing token!?!&quot;);</b>
+<b class="nc">&nbsp;        System.out.println(refreshToken);</b>
+&nbsp;
+&nbsp;        try {
+<b class="nc">&nbsp;            JWTValidator validator = JWTValidator.of(JWTUtil.parseToken(refreshToken));</b>
+<b class="nc">&nbsp;            validator.validateDate();</b>
+<b class="nc">&nbsp;        } catch (ValidateException e) {</b>
+<b class="nc">&nbsp;            res.setOk(false);</b>
+<b class="nc">&nbsp;            res.setMsg(&quot;refresh token无效，请重新登录&quot;);</b>
+<b class="nc">&nbsp;            return res;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        try {
+<b class="nc">&nbsp;            JWT refreshTokenJwt = JWTUtil.parseToken(refreshToken);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;OHHH: &quot; + refreshTokenJwt.verify());</b>
+<b class="nc">&nbsp;            String email = JWTUtil.parseToken(refreshToken).getPayloads().getStr(&quot;email&quot;);</b>
+<b class="nc">&nbsp;            String clientIp = JWTUtil.parseToken(refreshToken).getPayloads().getStr(&quot;ip&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;            String newAccessToken = JWT.create()</b>
+<b class="nc">&nbsp;                    .setPayload(&quot;email&quot;, email)</b>
+<b class="nc">&nbsp;                    .setPayload(&quot;ip&quot;, clientIp)</b>
+<b class="nc">&nbsp;                    .setExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 10))</b>
+<b class="nc">&nbsp;                    .setKey(SECRET_KEY).sign();</b>
+&nbsp;
+<b class="nc">&nbsp;            res.setOk(true);</b>
+<b class="nc">&nbsp;            res.setMsg(&quot;Token refreshed successfully&quot;);</b>
+<b class="nc">&nbsp;            res.setData(newAccessToken);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            res.setOk(false);</b>
+<b class="nc">&nbsp;            res.setMsg(&quot;Failed to refresh token: &quot; + e.getMessage());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        System.out.println(res.getMsg());</b>
+<b class="nc">&nbsp;        return res;</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    @PostMapping(&quot;/user/register&quot;)
 &nbsp;    public RetType register(@RequestBody User user) {
-<b class="fc">&nbsp;        return userService.Register(user.getEmail(), user.getPassword(),user.getAvatar());</b>
+&nbsp;
+<b class="nc">&nbsp;        System.out.println(&quot;register&quot;);</b>
+<b class="nc">&nbsp;        System.out.println(user);</b>
+<b class="nc">&nbsp;        return userService.Register(user.getEmail(), user.getPassword(), user.getAvatar(), user.getUsername());</b>
 &nbsp;    }
-&nbsp;    
 &nbsp;}
 </code>
 </pre>
@@ -127,7 +215,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2024-07-04 13:52</div>
+    <div style="float:right;">generated on 2024-07-18 17:31</div>
 </div>
 </body>
 </html>

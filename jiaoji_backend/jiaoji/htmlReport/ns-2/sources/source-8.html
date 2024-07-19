@@ -1,0 +1,101 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > ObjectService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.example.jiaoji.service</a>
+</div>
+
+<h1>Coverage Summary for Class: ObjectService (org.example.jiaoji.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">ObjectService</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.example.jiaoji.service;
+&nbsp;
+&nbsp;import com.github.pagehelper.PageInfo;
+&nbsp;import org.example.jiaoji.pojo.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;public interface ObjectService {
+&nbsp;
+&nbsp;    public Integer InsertObject(Objects data);
+&nbsp;
+&nbsp;    public PageInfo&lt;Objects&gt; SelectAllInTopic(Integer id, Integer pageSize, Integer pageIndex);
+&nbsp;
+&nbsp;    public  List&lt;Objects&gt; SelectById(Integer id);
+&nbsp;
+&nbsp;    public Topic SelectTopicById(Integer id);
+&nbsp;
+&nbsp;    public double getAveScore(Integer id);
+&nbsp;
+&nbsp;    public List&lt;Objects&gt; search(String keyword);
+&nbsp;
+&nbsp;    public Remark getHottestRemark(Integer id);
+&nbsp;
+&nbsp;    public List&lt;top3Object&gt; SelectTop3(Integer topicId);
+&nbsp;
+&nbsp;    public RetType deleteObject(Integer objectId);
+&nbsp;
+&nbsp;    public void updateAveScore(Integer id, Integer score);
+&nbsp;
+&nbsp;    public void decAveScore(Integer id, Integer score);
+&nbsp;
+&nbsp;    public void updateHotComment(Integer id, Integer likes, Integer change);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-07-18 17:31</div>
+</div>
+</body>
+</html>

@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
-  <title>Coverage Report > RemarkController</title>
+  <title>Coverage Report > ObjectController</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -22,18 +22,19 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">org.example.jiaoji.controller</a>
 </div>
 
-<h1>Coverage Summary for Class: RemarkController (org.example.jiaoji.controller)</h1>
+<h1>Coverage Summary for Class: ObjectController (org.example.jiaoji.controller)</h1>
 
 <table class="coverageStats">
+
 <tr>
   <th class="name">Class</th>
 <th class="coverageStat 
 ">
-  Class, %
+  Method, %
 </th>
 <th class="coverageStat 
 ">
-  Method, %
+  Branch, %
 </th>
 <th class="coverageStat 
 ">
@@ -41,7 +42,34 @@ Current scope:     <a href="../../index.html">all classes</a>
 </th>
 </tr>
 <tr>
-  <td class="name">RemarkController</td>
+  <td class="name">ObjectController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (35/35)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ObjectController$1</td>
 <td class="coverageStat">
   <span class="percent">
     100%
@@ -55,9 +83,50 @@ Current scope:     <a href="../../index.html">all classes</a>
     100%
   </span>
   <span class="absValue">
-    (10/10)
+    (1/1)
   </span>
 </td>
+  </tr>
+  <tr>
+    <td class="name">ObjectController$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ObjectController$3</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
 <td class="coverageStat">
   <span class="percent">
     100%
@@ -66,8 +135,23 @@ Current scope:     <a href="../../index.html">all classes</a>
     (10/10)
   </span>
 </td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (38/38)
+  </span>
+</td>
 </tr>
-
 </table>
 
 <br/>
@@ -77,69 +161,109 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package org.example.jiaoji.controller;
 &nbsp;
-&nbsp;import java.util.List;
-&nbsp;
 &nbsp;import com.github.pagehelper.PageInfo;
-&nbsp;import org.example.jiaoji.pojo.Remark;
+&nbsp;import org.example.jiaoji.pojo.Objects;
 &nbsp;import org.example.jiaoji.pojo.RetType;
-&nbsp;import org.example.jiaoji.pojo.User;
-&nbsp;import org.example.jiaoji.service.RemarkService;
+&nbsp;import org.example.jiaoji.pojo.Topic;
+&nbsp;import org.example.jiaoji.pojo.top3Object;
 &nbsp;import org.springframework.beans.factory.annotation.Autowired;
-&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.data.redis.core.StringRedisTemplate;
 &nbsp;import org.springframework.web.bind.annotation.*;
 &nbsp;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.ResponseBody;
+&nbsp;
+&nbsp;import com.alibaba.fastjson.JSON;
+&nbsp;import com.alibaba.fastjson.TypeReference;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;import org.example.jiaoji.service.ObjectService;
+&nbsp;import org.example.jiaoji.service.TopicService;
+&nbsp;import org.springframework.web.bind.annotation.RequestBody;
+&nbsp;
 &nbsp;@RestController
-&nbsp;@CrossOrigin
-<b class="fc">&nbsp;public class RemarkController {</b>
+<b class="fc">&nbsp;@CrossOrigin</b>
+<b class="fc">&nbsp;public class ObjectController {</b>
 &nbsp;    @Autowired
-&nbsp;    private RemarkService remarkService;
+&nbsp;    private ObjectService objectService;
+&nbsp;    @Autowired
+&nbsp;    private TopicService topicService;
 &nbsp;
-&nbsp;    @GetMapping(&quot;/remarks/{objectId}&quot;)
+&nbsp;    @Autowired
+&nbsp;    private StringRedisTemplate stringRedisTemplate;
+&nbsp;
+&nbsp;    @GetMapping(&quot;/object/{id}&quot;)
 &nbsp;    @ResponseBody
-&nbsp;    public ResponseEntity&lt;PageInfo&lt;Remark&gt;&gt; getRemark(@PathVariable(&quot;objectId&quot;) Integer id, @RequestParam Integer pageIndex,
-&nbsp;                                                      @RequestParam Integer pageSize, @RequestParam Boolean orderByHot) {
-<b class="fc">&nbsp;        return ResponseEntity.ok(remarkService.SelectByObject(id, pageIndex, pageSize, orderByHot));</b>
+&nbsp;    public ResponseEntity&lt;PageInfo&lt;Objects&gt;&gt; getObject(@PathVariable(&quot;id&quot;) Integer id,
+&nbsp;                                                       @RequestParam Integer pageIndex,
+&nbsp;                                                       @RequestParam Integer pageSize) {
+<b class="fc">&nbsp;        topicService.addViews(id);</b>
+<b class="fc">&nbsp;        String key = &quot;getObjectbyTopicId:&quot; + id;</b>
+<b class="fc">&nbsp;        if (stringRedisTemplate.opsForValue().get(key) == null) {</b>
+<b class="fc">&nbsp;            PageInfo&lt;Objects&gt; objects = objectService.SelectAllInTopic(id, pageSize, pageIndex);</b>
+<b class="fc">&nbsp;            String json = JSON.toJSONString(objects);</b>
+<b class="fc">&nbsp;            stringRedisTemplate.opsForValue().set(key, json, 10, java.util.concurrent.TimeUnit.SECONDS);</b>
+<b class="fc">&nbsp;            return ResponseEntity.ok(objects);</b>
+&nbsp;        }else {
+<b class="fc">&nbsp;            String json = stringRedisTemplate.opsForValue().get(key);</b>
+<b class="fc">&nbsp;            PageInfo&lt;Objects&gt; objects = JSON.parseObject(json, new TypeReference&lt;PageInfo&lt;Objects&gt;&gt;() {});</b>
+<b class="fc">&nbsp;            return ResponseEntity.ok(objects);</b>
+&nbsp;        }
 &nbsp;    }
 &nbsp;
-&nbsp;    @GetMapping(&quot;/remarks/isRemark/{objectId}/{uid}&quot;)
-&nbsp;    public ResponseEntity&lt;Boolean&gt; isRemark(@PathVariable(&quot;objectId&quot;) Integer objectId, @PathVariable(&quot;uid&quot;) Integer uid) {
-<b class="fc">&nbsp;        return ResponseEntity.ok(remarkService.isRemarked(objectId, uid));</b>
+&nbsp;    @PostMapping(&quot;/object&quot;)
+&nbsp;    public Integer insert(@RequestBody Objects object) {
+&nbsp;
+<b class="fc">&nbsp;        return objectService.InsertObject(object);</b>
 &nbsp;    }
 &nbsp;
-&nbsp;    @GetMapping(&quot;/remarks/score/{objectId}&quot;)
-&nbsp;    public ResponseEntity&lt;List&lt;Integer&gt;&gt; getScore(@PathVariable(&quot;objectId&quot;) Integer objectId) {
-<b class="fc">&nbsp;        return ResponseEntity.ok(remarkService.getScore(objectId));</b>
+&nbsp;    @GetMapping(&quot;/object/remark/{id}&quot;)
+&nbsp;    @ResponseBody
+&nbsp;    public ResponseEntity&lt;List&lt;Objects&gt;&gt; getObjectById(@PathVariable(&quot;id&quot;) Integer id) {
+<b class="fc">&nbsp;        String key = &quot;object:&quot; + id;</b>
+<b class="fc">&nbsp;            if (stringRedisTemplate.opsForValue().get(key) == null) {</b>
+&nbsp;        List&lt;Objects&gt; objects;
+<b class="fc">&nbsp;        objects = objectService.SelectById(id);</b>
+<b class="fc">&nbsp;        String json = JSON.toJSONString(objects);</b>
+<b class="fc">&nbsp;        stringRedisTemplate.opsForValue().set(key, json, 3600, java.util.concurrent.TimeUnit.SECONDS);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(objects);</b>
+&nbsp;        }else {
+<b class="fc">&nbsp;                String json = stringRedisTemplate.opsForValue().get(key);</b>
+<b class="fc">&nbsp;                List&lt;Objects&gt; objects = JSON.parseObject(json, new TypeReference&lt;List&lt;Objects&gt;&gt;() {});</b>
+<b class="fc">&nbsp;                return ResponseEntity.ok(objects);</b>
+&nbsp;            }
 &nbsp;    }
 &nbsp;
-&nbsp;    @GetMapping(&quot;/remarks/changeLike/{id}/{change}/{uid}&quot;)
-&nbsp;    public RetType changeLike(@PathVariable(&quot;id&quot;) Integer id, @PathVariable(&quot;change&quot;) Integer change,
-&nbsp;            @PathVariable(&quot;uid&quot;) Integer uid) {
-<b class="fc">&nbsp;        return remarkService.changeLike(id, change, uid);</b>
+&nbsp;    //takes 3s
+&nbsp;    @GetMapping(&quot;/object/search/{keyword}&quot;)
+&nbsp;    @ResponseBody
+&nbsp;    public List&lt;Objects&gt; getObjectsByTopicId(@PathVariable(&quot;keyword&quot;) String keyword) {
+&nbsp;        List&lt;Objects&gt; objects;
+<b class="fc">&nbsp;        objects =objectService.search(keyword);</b>
+<b class="fc">&nbsp;        return objects;</b>
+&nbsp;    }
+&nbsp;    @GetMapping(&quot;/object/top3/{topicId}&quot;)
+&nbsp;    @ResponseBody
+&nbsp;    public List&lt;top3Object&gt; getObjectsByTopicId(@PathVariable(&quot;topicId&quot;) Integer topicId) {
+&nbsp;        
+<b class="fc">&nbsp;        if(stringRedisTemplate.opsForValue().get(&quot;top3Object:&quot; + topicId) == null) {</b>
+<b class="fc">&nbsp;            List&lt;top3Object&gt; objects = objectService.SelectTop3(topicId);</b>
+<b class="fc">&nbsp;            String json = JSON.toJSONString(objects);</b>
+<b class="fc">&nbsp;            stringRedisTemplate.opsForValue().set(&quot;top3Object:&quot; + topicId, json, 3600, java.util.concurrent.TimeUnit.SECONDS);</b>
+<b class="fc">&nbsp;            return objects;</b>
+&nbsp;        }else {
+<b class="fc">&nbsp;            String json = stringRedisTemplate.opsForValue().get(&quot;top3Object:&quot; + topicId);</b>
+<b class="fc">&nbsp;            List&lt;top3Object&gt; objects = JSON.parseObject(json, new TypeReference&lt;List&lt;top3Object&gt;&gt;() {});</b>
+<b class="fc">&nbsp;            return objects;</b>
+&nbsp;        }
 &nbsp;    }
 &nbsp;
-&nbsp;    @GetMapping(&quot;/remarks/delete/{id}&quot;)
+&nbsp;    @DeleteMapping(&quot;/object/{id}&quot;)
+&nbsp;    @ResponseBody
 &nbsp;    public RetType delete(@PathVariable(&quot;id&quot;) Integer id) {
-<b class="fc">&nbsp;        return remarkService.deleteRemark(id);</b>
-&nbsp;    }
-&nbsp;
-&nbsp;    @GetMapping(&quot;/remarks/deleteUserObj/{objectId}/{uid}&quot;)
-&nbsp;    public RetType deleteUserObj(@PathVariable(&quot;objectId&quot;) Integer objectId,@PathVariable(&quot;uid&quot;) Integer uid) {
-<b class="fc">&nbsp;        return remarkService.deleteUserObj(objectId, uid);</b>
-&nbsp;    }
-&nbsp;
-&nbsp;    @GetMapping(&quot;/getAllUser&quot;)
-&nbsp;    public ResponseEntity&lt;List&lt;User&gt;&gt; getAllUsers() {
-<b class="fc">&nbsp;        return ResponseEntity.ok(remarkService.getAllUser());</b>
-&nbsp;    }
-&nbsp;
-&nbsp;    @PostMapping(&quot;/remarks&quot;)
-&nbsp;    public Integer insert(@RequestBody Remark remark) {
-<b class="fc">&nbsp;        return remarkService.addRemark(remark);</b>
-&nbsp;    }
-&nbsp;
-&nbsp;    @GetMapping(&quot;/remarks/getLike/{id}/{uid}&quot;)
-&nbsp;    public ResponseEntity&lt;Boolean&gt; getLike(@PathVariable(&quot;id&quot;) Integer id, @PathVariable(&quot;uid&quot;) Integer uid) {
-<b class="fc">&nbsp;        return ResponseEntity.ok(remarkService.isLike(id, uid));</b>
+<b class="fc">&nbsp;        RetType ret =objectService.deleteObject(id);</b>
+<b class="fc">&nbsp;        stringRedisTemplate.delete(&quot;object:&quot; + id);</b>
+<b class="fc">&nbsp;        return ret;</b>
 &nbsp;    }
 &nbsp;
 &nbsp;}
@@ -166,7 +290,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2024-07-04 13:52</div>
+    <div style="float:right;">generated on 2024-07-18 17:31</div>
 </div>
 </body>
 </html>

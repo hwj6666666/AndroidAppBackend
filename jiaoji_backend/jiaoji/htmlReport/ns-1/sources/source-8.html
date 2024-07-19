@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
-  <title>Coverage Report > UserController</title>
+  <title>Coverage Report > TopicController</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -22,15 +22,12 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">org.example.jiaoji.controller</a>
 </div>
 
-<h1>Coverage Summary for Class: UserController (org.example.jiaoji.controller)</h1>
+<h1>Coverage Summary for Class: TopicController (org.example.jiaoji.controller)</h1>
 
 <table class="coverageStats">
+
 <tr>
   <th class="name">Class</th>
-<th class="coverageStat 
-">
-  Class, %
-</th>
 <th class="coverageStat 
 ">
   Method, %
@@ -45,41 +42,116 @@ Current scope:     <a href="../../index.html">all classes</a>
 </th>
 </tr>
 <tr>
-  <td class="name">UserController</td>
+  <td class="name">TopicController</td>
 <td class="coverageStat">
   <span class="percent">
-    100%
+    0%
   </span>
   <span class="absValue">
-    (1/1)
+    (0/9)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    100%
+    0%
   </span>
   <span class="absValue">
-    (12/12)
+    (0/8)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    100%
+    0%
   </span>
   <span class="absValue">
-    (8/8)
-  </span>
-</td>
-<td class="coverageStat">
-  <span class="percent">
-    100%
-  </span>
-  <span class="absValue">
-    (28/28)
+    (0/48)
   </span>
 </td>
 </tr>
-
+  <tr>
+    <td class="name">TopicController$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">TopicController$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">TopicController$3</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/51)
+  </span>
+</td>
+</tr>
 </table>
 
 <br/>
@@ -89,115 +161,133 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package org.example.jiaoji.controller;
 &nbsp;
-&nbsp;import org.example.jiaoji.pojo.Objects;
-&nbsp;import org.example.jiaoji.pojo.Remark;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.data.redis.core.StringRedisTemplate;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;
+&nbsp;import com.github.pagehelper.PageInfo;
+&nbsp;import com.alibaba.fastjson.JSON;
+&nbsp;import com.alibaba.fastjson.TypeReference;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import java.util.List;
+&nbsp;
 &nbsp;import org.example.jiaoji.pojo.RetType;
 &nbsp;import org.example.jiaoji.pojo.Topic;
-&nbsp;import org.example.jiaoji.pojo.User;
-&nbsp;import org.example.jiaoji.service.ObjectService;
-&nbsp;import org.example.jiaoji.service.UserService;
-&nbsp;import org.springframework.beans.factory.annotation.Autowired;
-&nbsp;import org.springframework.http.ResponseEntity;
-&nbsp;import org.springframework.web.bind.annotation.*;
-&nbsp;
-&nbsp;import java.util.List;
-&nbsp;import java.util.Map;
-&nbsp;
-&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.example.jiaoji.service.TopicService;
+&nbsp;import org.springframework.web.bind.annotation.RequestBody;
 &nbsp;
 &nbsp;@RestController
 &nbsp;@CrossOrigin
-<b class="fc">&nbsp;public class UserController {</b>
+&nbsp;@RequestMapping(&quot;/topic&quot;)
+<b class="nc">&nbsp;public class TopicController {</b>
 &nbsp;    @Autowired
-&nbsp;    private UserService userService;
-&nbsp;
+&nbsp;    private StringRedisTemplate stringRedisTemplate;
 &nbsp;    @Autowired
-&nbsp;    private ObjectService objectService;
+&nbsp;    private TopicService topicService;
 &nbsp;
-&nbsp;    @GetMapping(&quot;/user&quot;)
-&nbsp;    @ResponseBody
-&nbsp;    public ResponseEntity&lt;List&lt;User&gt;&gt; getAllUser() {
-<b class="fc">&nbsp;        List&lt;User&gt; users = userService.SelectAll();</b>
-<b class="fc">&nbsp;        return ResponseEntity.ok(users);</b>
-&nbsp;    }
-&nbsp;
-&nbsp;    @GetMapping(&quot;/user/{id}&quot;)
-&nbsp;    @ResponseBody
-&nbsp;    public ResponseEntity&lt;User&gt; getUserById(@PathVariable(&quot;id&quot;) Integer id) {
-<b class="fc">&nbsp;        User user = userService.SelectByUserId(id);</b>
-<b class="fc">&nbsp;        return ResponseEntity.ok(user);</b>
-&nbsp;    }
-&nbsp;
-&nbsp;    @GetMapping(&quot;/user/{id}/topics&quot;)
-&nbsp;    @ResponseBody
-&nbsp;    public ResponseEntity&lt;List&lt;Topic&gt;&gt; getTopicsById(@PathVariable(&quot;id&quot;) Integer id) {
-<b class="fc">&nbsp;        List&lt;Topic&gt; topics = userService.SelectTopicsById(id);</b>
-<b class="fc">&nbsp;        return ResponseEntity.ok(topics);</b>
-&nbsp;    }
-&nbsp;
-&nbsp;    @GetMapping(&quot;/user/{id}/objects&quot;)
-&nbsp;    @ResponseBody
-&nbsp;    public ResponseEntity&lt;List&lt;Objects&gt;&gt; getObjectsById(@PathVariable(&quot;id&quot;) Integer id) {
-<b class="fc">&nbsp;        List&lt;Objects&gt; objects = userService.SelectObjectsById(id);</b>
-<b class="fc">&nbsp;        for (Objects object : objects) {</b>
-<b class="fc">&nbsp;            object.setAveScore(objectService.getAveScore(object.getId()));</b>
-<b class="fc">&nbsp;            object.setHottestRemark(objectService.getHottestRemark(object.getId()));</b>
+&nbsp;    //takes 3s
+&nbsp;    @GetMapping(&quot;/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;PageInfo&lt;Topic&gt;&gt; getTopic(@PathVariable(&quot;id&quot;) Integer id,
+&nbsp;                                                    @RequestParam Integer pageIndex,
+&nbsp;                                                    @RequestParam Integer pageSize,
+&nbsp;                                     @RequestParam String type) {
+&nbsp;        try {
+<b class="nc">&nbsp;            String key = &quot;id&quot; + id + &quot;pageIndex&quot; + pageIndex + &quot;pageSize&quot; + pageSize + &quot;type&quot; + type;</b>
+<b class="nc">&nbsp;            if (stringRedisTemplate.opsForValue().get(key) == null) {</b>
+&nbsp;                PageInfo&lt;Topic&gt; topic;
+<b class="nc">&nbsp;                if (id == 0) {</b>
+<b class="nc">&nbsp;                    topic = topicService.SelectAll(pageSize, pageIndex, type);</b>
+&nbsp;                } else {
+<b class="nc">&nbsp;                    topic = topicService.SelectByClassId(id, pageSize, pageIndex, type);</b>
+&nbsp;                }
+<b class="nc">&nbsp;                String json = JSON.toJSONString(topic);</b>
+<b class="nc">&nbsp;                stringRedisTemplate.opsForValue().set(key, json, 8, java.util.concurrent.TimeUnit.SECONDS);</b>
+<b class="nc">&nbsp;                return ResponseEntity.ok(topic);</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                String json = stringRedisTemplate.opsForValue().get(key);</b>
+<b class="nc">&nbsp;                PageInfo&lt;Topic&gt; topic = JSON.parseObject(json, new TypeReference&lt;PageInfo&lt;Topic&gt;&gt;() {});</b>
+<b class="nc">&nbsp;                return ResponseEntity.ok(topic);</b>
+&nbsp;            }
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();</b>
 &nbsp;        }
-<b class="fc">&nbsp;        return ResponseEntity.ok(objects);</b>
 &nbsp;    }
 &nbsp;
-&nbsp;    @GetMapping(&quot;/user/{id}/remarks&quot;)
-&nbsp;    @ResponseBody
-&nbsp;    public ResponseEntity&lt;List&lt;Remark&gt;&gt; getRemarksById(@PathVariable(&quot;id&quot;) Integer id) {
-<b class="fc">&nbsp;        List&lt;Remark&gt; remark = userService.SelectRemarksById(id);</b>
-<b class="fc">&nbsp;        return ResponseEntity.ok(remark);</b>
-&nbsp;    }
-&nbsp;
-&nbsp;    @GetMapping(&quot;/user/{id}/follows&quot;)
-&nbsp;    @ResponseBody
-&nbsp;    public ResponseEntity&lt;List&lt;Topic&gt;&gt; getFollows(@PathVariable(&quot;id&quot;) Integer id) {
-<b class="fc">&nbsp;        List&lt;Topic&gt; follow = userService.SelectFollows(id);</b>
-<b class="fc">&nbsp;        return ResponseEntity.ok(follow);</b>
-&nbsp;    }
-&nbsp;
-&nbsp;    @PutMapping(&quot;/user/{id}&quot;)
-&nbsp;    public ResponseEntity&lt;User&gt; updateUser(@PathVariable(&quot;id&quot;) Integer id, @RequestBody User user) {
-<b class="fc">&nbsp;        User updatedUser = userService.updateUser(id, user);</b>
-&nbsp;//        updatedUser.setPassword(&quot;&quot;);
-<b class="fc">&nbsp;        if (updatedUser == null) {</b>
-<b class="fc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;    //takes 3s
+&nbsp;    @GetMapping(&quot;/object/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;Topic&gt; getOneTopic(@PathVariable(&quot;id&quot;) Integer id) {
+&nbsp;        try {
+<b class="nc">&nbsp;            String key = &quot;topicId:&quot; + id;</b>
+<b class="nc">&nbsp;            if (stringRedisTemplate.opsForValue().get(key) == null) {</b>
+<b class="nc">&nbsp;                Topic topic = topicService.SelectById(id);</b>
+<b class="nc">&nbsp;                String json = JSON.toJSONString(topic);</b>
+<b class="nc">&nbsp;                stringRedisTemplate.opsForValue().set(key, json, 3600, java.util.concurrent.TimeUnit.SECONDS);</b>
+<b class="nc">&nbsp;                return ResponseEntity.ok(topic);</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                topicService.addViews(id);</b>
+<b class="nc">&nbsp;                String json = stringRedisTemplate.opsForValue().get(key);</b>
+<b class="nc">&nbsp;                Topic topic = JSON.parseObject(json, new TypeReference&lt;Topic&gt;() {});</b>
+<b class="nc">&nbsp;                return ResponseEntity.ok(topic);</b>
+&nbsp;            }
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();</b>
 &nbsp;        }
-<b class="fc">&nbsp;        return ResponseEntity.ok(updatedUser);</b>
 &nbsp;    }
 &nbsp;
-&nbsp;    @PutMapping(&quot;/psd/{id}&quot;)
-&nbsp;    public ResponseEntity&lt;User&gt; updatePsd(@PathVariable(&quot;id&quot;) Integer id, @RequestBody User user) {
-<b class="fc">&nbsp;        User updatedPsdUser = userService.updatePsd(id, user);</b>
-&nbsp;//        暂时直接返回
-&nbsp;//        updatedPsdUser.setPassword(&quot;&quot;);
-<b class="fc">&nbsp;        return ResponseEntity.ok(updatedPsdUser);</b>
+&nbsp;    @PostMapping
+&nbsp;    public RetType insert(@RequestBody Topic test) {
+<b class="nc">&nbsp;        return topicService.insertTopic(test);</b>
 &nbsp;    }
 &nbsp;
-&nbsp;    @GetMapping(&quot;/user/object/{id}/nameAndTopic&quot;)
-&nbsp;    @ResponseBody
-&nbsp;    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; getObjectNameAndTopicNameById(@PathVariable(&quot;id&quot;) Integer id) {
-<b class="fc">&nbsp;        Map&lt;String, String&gt; result = userService.getObjectNameAndTopicNameById(id);</b>
-<b class="fc">&nbsp;        if (result == null || result.isEmpty()) {</b>
-<b class="fc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;    //takes 5s
+&nbsp;    @GetMapping(&quot;/search/{keyword}&quot;)
+&nbsp;    public ResponseEntity&lt;PageInfo&lt;Topic&gt;&gt; search(@PathVariable(&quot;keyword&quot;) String keyword,
+&nbsp;                                                  @RequestParam Integer pageIndex,
+&nbsp;                                                  @RequestParam Integer pageSize) {
+<b class="nc">&nbsp;        PageInfo&lt;Topic&gt; topic = topicService.search(keyword, pageSize, pageIndex);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(topic);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    
+&nbsp;    @PostMapping(&quot;/follow&quot;)
+&nbsp;    public RetType follow(@RequestParam Integer userId, @RequestParam Integer topicId) {
+<b class="nc">&nbsp;        return topicService.setFollow(topicId, userId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/follow&quot;)
+&nbsp;    public boolean unfollow(@RequestParam Integer userId, @RequestParam Integer topicId) {
+<b class="nc">&nbsp;        return topicService.findFollow(topicId, userId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @DeleteMapping(&quot;/{id}&quot;)
+&nbsp;    public RetType delete(@PathVariable(&quot;id&quot;) Integer id) {
+<b class="nc">&nbsp;        RetType ret = topicService.deleteTopic(id);</b>
+<b class="nc">&nbsp;        stringRedisTemplate.delete(&quot;topicId:&quot; + id);</b>
+<b class="nc">&nbsp;        return ret;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/hot&quot;)
+&nbsp;    public List&lt;Topic&gt; hotTopic() {
+&nbsp;        try {
+<b class="nc">&nbsp;            String key = &quot;hotTopic&quot;;</b>
+<b class="nc">&nbsp;            if (stringRedisTemplate.opsForValue().get(key) == null) {</b>
+<b class="nc">&nbsp;                List&lt;Topic&gt; topic = topicService.hotTopic();</b>
+<b class="nc">&nbsp;                String json = JSON.toJSONString(topic);</b>
+<b class="nc">&nbsp;                stringRedisTemplate.opsForValue().set(key, json, 3600, java.util.concurrent.TimeUnit.SECONDS);</b>
+<b class="nc">&nbsp;                return topic;</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                String json = stringRedisTemplate.opsForValue().get(key);</b>
+<b class="nc">&nbsp;                List&lt;Topic&gt; topic = JSON.parseObject(json, new TypeReference&lt;List&lt;Topic&gt;&gt;() {});</b>
+<b class="nc">&nbsp;                return topic;</b>
+&nbsp;            }
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+<b class="nc">&nbsp;            return null;</b>
 &nbsp;        }
-<b class="fc">&nbsp;        return ResponseEntity.ok(result);</b>
 &nbsp;    }
-&nbsp;
-&nbsp;    @GetMapping(&quot;user/search/{keyword}&quot;)
-&nbsp;    public List&lt;User&gt; getMethodName(@PathVariable(&quot;keyword&quot;) String keyword) {
-<b class="fc">&nbsp;        return userService.search(keyword);</b>
-&nbsp;    }
-&nbsp;
-&nbsp;    @GetMapping(&quot;user/ban/{id}&quot;)
-&nbsp;    public RetType ban(@PathVariable(&quot;id&quot;) Integer id) {
-<b class="fc">&nbsp;        return userService.banUser(id);</b>
-&nbsp;    }
-&nbsp;
 &nbsp;}
 </code>
 </pre>
@@ -222,7 +312,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2024-07-04 13:52</div>
+    <div style="float:right;">generated on 2024-07-18 17:31</div>
 </div>
 </body>
 </html>

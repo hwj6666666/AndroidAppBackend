@@ -6,15 +6,18 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
 import com.github.pagehelper.PageInfo;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.TypeReference;
 import org.springframework.http.HttpStatus;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.example.jiaoji.pojo.RetType;
 import org.example.jiaoji.pojo.Topic;
 import org.example.jiaoji.service.TopicService;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.example.jiaoji.utils.KafkaProducerService;
 
 @RestController
 @CrossOrigin
@@ -24,6 +27,8 @@ public class TopicController {
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private TopicService topicService;
+    @Autowired
+    private KafkaProducerService kfkproducer;
 
     //takes 3s
     @GetMapping("/{id}")
@@ -65,7 +70,7 @@ public class TopicController {
                 stringRedisTemplate.opsForValue().set(key, json, 3600, java.util.concurrent.TimeUnit.SECONDS);
                 return ResponseEntity.ok(topic);
             } else {
-                topicService.addViews(id);
+                kfkproducer.sendMessage("topic_views",id);
                 String json = stringRedisTemplate.opsForValue().get(key);
                 Topic topic = JSON.parseObject(json, new TypeReference<Topic>() {});
                 return ResponseEntity.ok(topic);
@@ -91,9 +96,20 @@ public class TopicController {
     }
 
     
+    // @PostMapping("/follow")
+    // public RetType follow(@RequestParam Integer userId, @RequestParam Integer topicId) {
+    //     return topicService.setFollow(topicId, userId);
+    // }
+
     @PostMapping("/follow")
     public RetType follow(@RequestParam Integer userId, @RequestParam Integer topicId) {
-        return topicService.setFollow(topicId, userId);
+   
+        Map<String,Integer> map = new HashMap<String,Integer>();
+        map.put("userId", userId);
+        map.put("topicId", topicId);
+    kfkproducer.sendMessage("topic_follow",map);
+    return new RetType(true, "修改成功", null);
+    //return topicService.setFollow(topicId, userId);
     }
 
     @GetMapping("/follow")

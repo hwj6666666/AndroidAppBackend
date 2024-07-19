@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSON;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -21,14 +21,11 @@ import org.example.jiaoji.pojo.RetType;
 import org.example.jiaoji.pojo.Topic;
 import org.example.jiaoji.service.ObjectService;
 import org.example.jiaoji.service.TopicService;
-import org.example.jiaoji.utils.LockManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 
-import java.util.concurrent.locks.Lock;
 import java.time.temporal.ChronoUnit;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -43,7 +40,6 @@ public class TopicServiceImpl implements TopicService {
     public static final int favorRate = 15;
     public static final int objectRate = 5;
 
-     private final LockManager lockMap = new LockManager(); 
 
     @Autowired
     private TopicMapper topicMapper;
@@ -116,19 +112,6 @@ public class TopicServiceImpl implements TopicService {
             PageInfo<Topic> pageInfo = new PageInfo<>(topics);
             return pageInfo;
         }
-       
-        // for (Topic topic : topics) {
-        // int remarkNum = topic.getRemarkNum() * remarkRate;
-        // int favor = topic.getFavor() * favorRate;
-        // int views = topic.getViews() * viewsRate;
-        // int objectNum = topic.getObjectNum() * objectRate;
-        // LocalDateTime publicTime = topic.getPublicTime();
-        // LocalDateTime now = LocalDateTime.now();
-        // double hours = ChronoUnit.HOURS.between(publicTime, now) / 24;
-        // double hot = (remarkNum + favor + views + objectNum) / (Math.pow(hours + 2,
-        // 1.2));
-        // topic.setHot((int) hot);
-        // }
     }
 
     @Override
@@ -236,14 +219,8 @@ public class TopicServiceImpl implements TopicService {
         return topThreeHotTopics;
     }
 
-    @Async
     public void addViews(Integer topicId) {
-       Lock lock = lockMap.getLock(topicId);
-        lock.lock();
-        try {
             topicMapper.addViews(topicId);
-        } finally {
-            lock.unlock();
-        }
     }
+
 }

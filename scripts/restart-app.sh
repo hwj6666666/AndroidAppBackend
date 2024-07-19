@@ -2,8 +2,8 @@
 
 # 确保 Java 在 PATH 中
 # which java
-# export JAVA_HOME=/root/java/jdk-22.0.2
-# export PATH=$JAVA_HOME/bin:$PATH
+ export JAVA_HOME=/root/java/jdk-22.0.2
+ export PATH=$JAVA_HOME/bin:$PATH
 
 # 检查 Java 是否可用
 if ! command -v java &> /dev/null; then

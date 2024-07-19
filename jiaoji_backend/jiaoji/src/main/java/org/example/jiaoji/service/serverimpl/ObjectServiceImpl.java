@@ -1,6 +1,7 @@
 package org.example.jiaoji.service.serverimpl;
 
 import java.io.IOException;
+import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +55,6 @@ public class ObjectServiceImpl implements ObjectService {
         }
         Objects object = new Objects();
         object.setTitle(data.getTitle());
-        object.setId(data.getId());
         object.setDescription(data.getDescription());
         object.setUserId(data.getUserId());
         object.setPicture(data.getPicture());
@@ -67,6 +67,7 @@ public class ObjectServiceImpl implements ObjectService {
         Topic topic = objectMapper.selectTopicById(object.getTopicId());
         topicMapper.updateObjectNum(topic.getObjectNum() + 1, topic.getId());
         objectMapper.insert(object);
+        remarkMapper.insertScore(object.getId());
         IndexRequest request = new IndexRequest("object").id(object.getId().toString());
 
         // 2.准备Json文档
@@ -142,7 +143,7 @@ public class ObjectServiceImpl implements ObjectService {
         }
         SearchHits searchHits = response.getHits();
         SearchHit[] hits = searchHits.getHits();
-        for(SearchHit hit : hits) {
+        for (SearchHit hit : hits) {
             String json = hit.getSourceAsString();
             Objects object = JSON.parseObject(json, Objects.class);
             System.out.println(object);
@@ -174,35 +175,49 @@ public class ObjectServiceImpl implements ObjectService {
     public void updateAveScore(Integer id, Integer score) {
         Objects object = objectMapper.selectOneById(id);
         Integer remarkNum = object.getRemarkNum();
-        double newScore = (object.getAveScore() * remarkNum + score)/(remarkNum + 1);
+        double newScore = (object.getAveScore() * remarkNum + score) / (remarkNum + 1);
         objectMapper.updateAveScore(newScore, remarkNum + 1, id);
     }
 
     public void decAveScore(Integer id, Integer score) {
         Objects object = objectMapper.selectOneById(id);
         Integer remarkNum = object.getRemarkNum();
-        double newScore = (object.getAveScore() * remarkNum - score)/(remarkNum - 1);
+        double newScore = 0;
+        if (remarkNum > 1) newScore = (object.getAveScore() * remarkNum - score) / (remarkNum - 1);
         objectMapper.updateAveScore(newScore, remarkNum - 1, id);
     }
 
     public void updateHotComment(Integer id, Integer remark_id, Integer change) {
         Objects object = objectMapper.selectOneById(id);
         Integer old_remark_id = object.getRemarkId();
-        if(old_remark_id.equals(0)){
-            Remark remark =remarkMapper.selectById(remark_id).getFirst();
+        if (old_remark_id.equals(0)) {
+            List<Remark> remarks = remarkMapper.selectById(remark_id);
+            if (remarks == null || remarks.isEmpty()) {
+                return;
+            }
+            Remark remark = remarks.getFirst();
             objectMapper.updateHotComment(id, remark.getContent(), remark_id);
             return;
         }
-        if(old_remark_id.equals(remark_id)) {
-            if(change < 0){
+        if (old_remark_id.equals(remark_id)) {
+            if (change < 0) {
                 Remark remark = getHottestRemark(id);
-                if(remark != null) objectMapper.updateHotComment(object.getId(), remark.getContent(), remark.getId());
+                if (remark != null) objectMapper.updateHotComment(object.getId(), remark.getContent(), remark.getId());
                 else objectMapper.updateHotComment(id, "", 0);
             }
-        }else{
-            Remark old_remark = remarkMapper.selectById(old_remark_id).getFirst();
-            Remark remark = remarkMapper.selectById(remark_id).getFirst();
-            if(old_remark.getLike() < remark.getLike()){
+        } else {
+            List<Remark> old_remarks = remarkMapper.selectById(old_remark_id);
+            List<Remark> remarks = remarkMapper.selectById(remark_id);
+            if (remarks == null || remarks.isEmpty()) {
+                return;
+            }
+            Remark remark = remarks.getFirst();
+            if (old_remarks == null || old_remarks.isEmpty()) {
+                objectMapper.updateHotComment(id, remark.getContent(), remark_id);
+                return;
+            }
+            Remark old_remark = old_remarks.getFirst();
+            if (old_remark.getLike() < remark.getLike()) {
                 objectMapper.updateHotComment(id, remark.getContent(), remark_id);
             }
         }

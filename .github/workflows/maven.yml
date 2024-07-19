@@ -9,7 +9,7 @@ on:
       - '**/docs/**'    # 忽略 docs 目录中的所有文件
 #      - '.github/**'
       - 'databaseSQL/**'
-      - 'scripts/**'
+#      - 'scripts/**'
   pull_request:
     branches: [ "main" ]
 

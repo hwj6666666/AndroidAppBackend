@@ -1,6 +1,8 @@
 package org.example.jiaoji.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.github.pagehelper.PageInfo;
 
@@ -42,7 +44,6 @@ public class RemarkController {
 
     @GetMapping("/remarks/score/{objectId}")
     public ResponseEntity<List<Integer>> getScore(@PathVariable("objectId") Integer objectId) {
-        kfkproducer.syncGetObjScore("object_getScore", objectId);
 
         String key="ObjScore:"+objectId;
         if (stringRedisTemplate.opsForValue().get(key) == null) {
@@ -61,7 +62,12 @@ public class RemarkController {
     @GetMapping("/remarks/changeLike/{id}/{change}/{uid}")
     public RetType changeLike(@PathVariable("id") Integer id, @PathVariable("change") Integer change,
             @PathVariable("uid") Integer uid) {
-        return remarkService.changeLike(id, change, uid);
+            Map<String, Integer> map = new HashMap<>();
+            map.put("uid", uid);
+            map.put("id", id);
+            map.put("change", change);
+            kfkproducer.sendMessage("RemarkchangeLike", map);
+        return new RetType(true, "修改点赞状态成功", null);
     }
 
     @GetMapping("/remarks/delete/{id}")

@@ -60,4 +60,7 @@ public interface RemarkMapper {
 
     @Select("select * from score where object_id = #{objectId}")
     public RemarkScore selectScore(Integer objectId);
+
+    @Insert("insert into score(object_id) values(#{objectId})")
+    public void insertScore(Integer objectId);
 }

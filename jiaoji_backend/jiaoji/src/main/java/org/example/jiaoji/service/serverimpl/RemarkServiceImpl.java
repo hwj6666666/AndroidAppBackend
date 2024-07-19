@@ -33,7 +33,11 @@ public class RemarkServiceImpl implements RemarkService {
         Topic topic = objectsMapper.selectTopicById(object.getTopicId());
         topicMapper.updateRemarkNum(topic.getRemarkNum() + 1, topic.getId());
         objectService.updateAveScore(data.getObjectId(), data.getScore());
-        remarkMapper.updateScore("score"+data.getScore(), data.getObjectId());
+
+        if (remarkMapper.selectScore(data.getObjectId()) == null)
+            remarkMapper.insertScore(data.getObjectId());
+        remarkMapper.updateScore("score" + data.getScore(), data.getObjectId());
+        objectService.updateHotComment(data.getObjectId(),data.getId(),0);
         return data.getId();
     }
 
@@ -73,9 +77,9 @@ public class RemarkServiceImpl implements RemarkService {
     public RetType deleteRemark(Integer id) {
         RetType ret = new RetType();
         Remark remark = remarkMapper.SelectOneById(id);
-        if(remark!=null) objectService.decAveScore(remark.getObjectId(), remark.getScore());
+        if (remark != null) objectService.decAveScore(remark.getObjectId(), remark.getScore());
         remarkMapper.delete(id);
-        remarkMapper.updateScoreSub("score"+remark.getScore(), remark.getObjectId());
+        remarkMapper.updateScoreSub("score" + remark.getScore(), remark.getObjectId());
         if (remarkMapper.selectById(id).isEmpty()) {
             ret.setMsg("删除成功");
             ret.setOk(true);
@@ -107,8 +111,8 @@ public class RemarkServiceImpl implements RemarkService {
 
     @Override
     public List<Integer> getScore(Integer objectId) {
-        RemarkScore res=remarkMapper.selectScore(objectId);
-        List<Integer> score=new ArrayList<>();
+        RemarkScore res = remarkMapper.selectScore(objectId);
+        List<Integer> score = new ArrayList<>();
         score.add(res.getScore2());
         score.add(res.getScore4());
         score.add(res.getScore6());
@@ -119,16 +123,15 @@ public class RemarkServiceImpl implements RemarkService {
 
     @Override
     public RetType deleteUserObj(Integer objectId, Integer uid) {
-        RetType ret=new RetType();
+        RetType ret = new RetType();
         List<Remark> remarks = remarkMapper.selectByUser(uid, objectId);
-        if(!remarks.isEmpty()) objectService.decAveScore(remarks.get(0).getObjectId(), remarks.get(0).getScore());
+        if (!remarks.isEmpty()) objectService.decAveScore(remarks.get(0).getObjectId(), remarks.get(0).getScore());
         remarkMapper.deleteUserObj(uid, objectId);
         if (remarkMapper.selectByUser(uid, objectId).isEmpty()) {
             ret.setOk(true);
             ret.setData(null);
             ret.setMsg("删除成功");
-        }
-        else {
+        } else {
             ret.setOk(false);
             ret.setData(null);
             ret.setMsg("删除失败");

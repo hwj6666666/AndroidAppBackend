@@ -47,7 +47,7 @@ public class ObjectController {
             return ResponseEntity.ok(objects);
         }else {
             String json = stringRedisTemplate.opsForValue().get(key);
-            objects = JSON.parseObject(json, new TypeReference<List<Objects>>() {});
+            objects = JSON.parseObject(json, new TypeReference<PageInfo<Objects>>() {});
             System.out.println(objects);
             return ResponseEntity.ok(objects);
         }
@@ -87,11 +87,10 @@ public class ObjectController {
     @GetMapping("/object/top3/{topicId}")
     @ResponseBody
     public List<top3Object> getObjectsByTopicId(@PathVariable("topicId") Integer topicId) {
-        
         if(stringRedisTemplate.opsForValue().get("top3Object:" + topicId) == null) {
             List<top3Object> objects = objectService.SelectTop3(topicId);
             String json = JSON.toJSONString(objects);
-            stringRedisTemplate.opsForValue().set("top3Object:" + topicId, json, 3600, java.util.concurrent.TimeUnit.SECONDS);
+            stringRedisTemplate.opsForValue().set("top3Object:" + topicId, json, 600, java.util.concurrent.TimeUnit.SECONDS);
             return objects;
         }else {
             String json = stringRedisTemplate.opsForValue().get("top3Object:" + topicId);

@@ -29,5 +29,5 @@ public interface ObjectService {
 
     public void decAveScore(Integer id, Integer score);
 
-    public void updateHotComment(Integer id, Integer likes, Integer change);
+    public void updateHotComment(Integer id, Integer remarkId, Integer change);
 }

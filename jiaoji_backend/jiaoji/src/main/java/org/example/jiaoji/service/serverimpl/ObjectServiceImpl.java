@@ -125,29 +125,29 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     public List<Objects> search(String keyword) {
-//        keyword = "%" + keyword + "%";
-//        return objectMapper.search(keyword);
-        List<Objects> objects = new ArrayList<>();
-        SearchRequest request = new SearchRequest("object");
-        // 组织DSL参数
-        request.source()
-                .query(QueryBuilders.matchQuery(keyword, "title"));
-        request.source().from(0).size(100);
-        SearchResponse response = null;
-        try {
-            response = client.search(request, RequestOptions.DEFAULT);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        SearchHits searchHits = response.getHits();
-        SearchHit[] hits = searchHits.getHits();
-        for (SearchHit hit : hits) {
-            String json = hit.getSourceAsString();
-            Objects object = JSON.parseObject(json, Objects.class);
-            System.out.println(object);
-            objects.add(object);
-        }
-        return objects;
+        keyword = "%" + keyword + "%";
+        return objectMapper.search(keyword);
+//        List<Objects> objects = new ArrayList<>();
+//        SearchRequest request = new SearchRequest("object");
+//        // 组织DSL参数
+//        request.source()
+//                .query(QueryBuilders.matchQuery(keyword, "title"));
+//        request.source().from(0).size(100);
+//        SearchResponse response = null;
+//        try {
+//            response = client.search(request, RequestOptions.DEFAULT);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//        SearchHits searchHits = response.getHits();
+//        SearchHit[] hits = searchHits.getHits();
+//        for (SearchHit hit : hits) {
+//            String json = hit.getSourceAsString();
+//            Objects object = JSON.parseObject(json, Objects.class);
+//            System.out.println(object);
+//            objects.add(object);
+//        }
+//        return objects;
     }
 
     public List<top3Object> SelectTop3(Integer topicId) {

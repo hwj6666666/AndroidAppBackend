@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
+
 import java.util.List;
 
 import org.example.jiaoji.service.ObjectService;
@@ -38,16 +39,17 @@ public class ObjectController {
         System.out.println(pageSize);
         PageInfo<Objects> objects;
         topicService.addViews(id);
-        String key = "getObjectbyTopicId:" + id;
+        String key = "getObjectbyTopicId:" + id + "pageIndex:" + pageIndex + "pageSize:" + pageSize;
         if (stringRedisTemplate.opsForValue().get(key) == null) {
             objects = objectService.SelectAllInTopic(id, pageSize, pageIndex);
             System.out.println(objects);
             String json = JSON.toJSONString(objects);
             stringRedisTemplate.opsForValue().set(key, json, 10, java.util.concurrent.TimeUnit.SECONDS);
             return ResponseEntity.ok(objects);
-        }else {
+        } else {
             String json = stringRedisTemplate.opsForValue().get(key);
-            objects = JSON.parseObject(json, new TypeReference<PageInfo<Objects>>() {});
+            objects = JSON.parseObject(json, new TypeReference<PageInfo<Objects>>() {
+            });
             System.out.println(objects);
             return ResponseEntity.ok(objects);
         }
@@ -63,17 +65,18 @@ public class ObjectController {
     @ResponseBody
     public ResponseEntity<List<Objects>> getObjectById(@PathVariable("id") Integer id) {
         String key = "object:" + id;
-            if (stringRedisTemplate.opsForValue().get(key) == null) {
-        List<Objects> objects;
-        objects = objectService.SelectById(id);
-        String json = JSON.toJSONString(objects);
-        stringRedisTemplate.opsForValue().set(key, json, 3600, java.util.concurrent.TimeUnit.SECONDS);
-        return ResponseEntity.ok(objects);
-        }else {
-                String json = stringRedisTemplate.opsForValue().get(key);
-                List<Objects> objects = JSON.parseObject(json, new TypeReference<List<Objects>>() {});
-                return ResponseEntity.ok(objects);
-            }
+        if (stringRedisTemplate.opsForValue().get(key) == null) {
+            List<Objects> objects;
+            objects = objectService.SelectById(id);
+            String json = JSON.toJSONString(objects);
+            stringRedisTemplate.opsForValue().set(key, json, 3600, java.util.concurrent.TimeUnit.SECONDS);
+            return ResponseEntity.ok(objects);
+        } else {
+            String json = stringRedisTemplate.opsForValue().get(key);
+            List<Objects> objects = JSON.parseObject(json, new TypeReference<List<Objects>>() {
+            });
+            return ResponseEntity.ok(objects);
+        }
     }
 
     //takes 3s
@@ -81,20 +84,22 @@ public class ObjectController {
     @ResponseBody
     public List<Objects> getObjectsByTopicId(@PathVariable("keyword") String keyword) {
         List<Objects> objects;
-        objects =objectService.search(keyword);
+        objects = objectService.search(keyword);
         return objects;
     }
+
     @GetMapping("/object/top3/{topicId}")
     @ResponseBody
     public List<top3Object> getObjectsByTopicId(@PathVariable("topicId") Integer topicId) {
-        if(stringRedisTemplate.opsForValue().get("top3Object:" + topicId) == null) {
+        if (stringRedisTemplate.opsForValue().get("top3Object:" + topicId) == null) {
             List<top3Object> objects = objectService.SelectTop3(topicId);
             String json = JSON.toJSONString(objects);
             stringRedisTemplate.opsForValue().set("top3Object:" + topicId, json, 600, java.util.concurrent.TimeUnit.SECONDS);
             return objects;
-        }else {
+        } else {
             String json = stringRedisTemplate.opsForValue().get("top3Object:" + topicId);
-            List<top3Object> objects = JSON.parseObject(json, new TypeReference<List<top3Object>>() {});
+            List<top3Object> objects = JSON.parseObject(json, new TypeReference<List<top3Object>>() {
+            });
             return objects;
         }
     }
@@ -102,7 +107,7 @@ public class ObjectController {
     @DeleteMapping("/object/{id}")
     @ResponseBody
     public RetType delete(@PathVariable("id") Integer id) {
-        RetType ret =objectService.deleteObject(id);
+        RetType ret = objectService.deleteObject(id);
         stringRedisTemplate.delete("object:" + id);
         return ret;
     }

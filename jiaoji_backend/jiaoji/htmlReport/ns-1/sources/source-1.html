@@ -59,7 +59,7 @@ Current scope:     <a href="../../index.html">all classes</a>
     100%
   </span>
   <span class="absValue">
-    (6/6)
+    (7/7)
   </span>
 </td>
 <td class="coverageStat">
@@ -75,7 +75,7 @@ Current scope:     <a href="../../index.html">all classes</a>
     100%
   </span>
   <span class="absValue">
-    (20/20)
+    (25/25)
   </span>
 </td>
 </tr>
@@ -115,14 +115,12 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;  }
 &nbsp;
 &nbsp;  @GetMapping(&quot;/chat&quot;)
-&nbsp;  public List&lt;Chat&gt;getAllChatWith(@RequestParam Integer id)
-&nbsp;  {
+&nbsp;  public List&lt;Chat&gt; getAllChatWith(@RequestParam Integer id) {
 <b class="fc">&nbsp;    return chatService.getAllChatWith(id);</b>
 &nbsp;  }
 &nbsp;
 &nbsp;  @GetMapping(&quot;/chat/list&quot;)
 &nbsp;  public ResponseEntity&lt;List&lt;ChatItemResponse&gt;&gt; getAllChatItem(@RequestParam Integer userId) {
-&nbsp;
 &nbsp;
 <b class="fc">&nbsp;    List&lt;ChatItem&gt; chatItems = chatService.getAllChatItem(userId);</b>
 <b class="fc">&nbsp;    List&lt;ChatItemResponse&gt; responses = new ArrayList&lt;&gt;();</b>
@@ -146,15 +144,28 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="fc">&nbsp;    return ResponseEntity.ok(responses);</b>
 &nbsp;  }
 &nbsp;
-&nbsp;  @GetMapping(&quot;/chat/avatar&quot;)
-&nbsp;    public String getAvatar(@RequestParam Integer userId) {
-<b class="fc">&nbsp;        return userService.getAvater(userId);</b>
-&nbsp;    }
+&nbsp;  @GetMapping(&quot;chat/item&quot;)
+&nbsp;  public ResponseEntity&lt;ChatItemResponse&gt; getChatItem(
+&nbsp;      @RequestParam Integer userId, @RequestParam Integer otherId) {
+<b class="fc">&nbsp;    System.out.println(&quot;userId: &quot; + userId);</b>
+<b class="fc">&nbsp;    System.out.println(&quot;otherId: &quot; + otherId);</b>
 &nbsp;
-&nbsp;    @GetMapping(&quot;/chat/id&quot;)
-&nbsp;    public Integer getUserId(@RequestParam Integer userId, @RequestParam Integer chatId) {
-<b class="fc">&nbsp;        return chatService.getTheOtherId(chatId, userId);</b>
-&nbsp;    }
+<b class="fc">&nbsp;    ChatItemResponse response=chatService.getChatItem(userId,otherId);</b>
+&nbsp;
+<b class="fc">&nbsp;    System.out.println(&quot;response: &quot; + response);</b>
+&nbsp;
+<b class="fc">&nbsp;    return ResponseEntity.ok(response);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @GetMapping(&quot;/chat/avatar&quot;)
+&nbsp;  public String getAvatar(@RequestParam Integer userId) {
+<b class="fc">&nbsp;    return userService.getAvater(userId);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @GetMapping(&quot;/chat/id&quot;)
+&nbsp;  public Integer getUserId(@RequestParam Integer userId, @RequestParam Integer chatId) {
+<b class="fc">&nbsp;    return chatService.getTheOtherId(chatId, userId);</b>
+&nbsp;  }
 &nbsp;}
 </code>
 </pre>
@@ -179,7 +190,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2024-07-04 13:52</div>
+    <div style="float:right;">generated on 2024-07-18 17:31</div>
 </div>
 </body>
 </html>

@@ -98,6 +98,12 @@
                          return;
                      }
 
+                     if (!parsedToken.getPayloads().getStr("tokenType").equals("access")) {
+                         System.out.println("tokenType check failed!");
+                         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "tokenType check failed!");
+                         return;
+                     }
+
                      if (userMapper.selectIdByEmail(parsedToken.getPayloads().getStr("email")) == null) {
                          System.out.println("email check failed!");
                          response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "email check failed!");

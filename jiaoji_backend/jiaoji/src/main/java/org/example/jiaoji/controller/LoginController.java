@@ -48,12 +48,14 @@ public class LoginController {
             String accessToken = JWT.create().
                     setPayload("email", user.getEmail()).
                     setPayload("ip", clientIp).
+                    setPayload("tokenType", "access").
                     setExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 10)).
                     setKey(SECRET_KEY).sign();
 
             String refreshToken = JWT.create().
                     setPayload("email", user.getEmail()).
                     setPayload("ip", clientIp).
+                    setPayload("tokenType", "refresh").
                     setExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7)).
                     setKey(SECRET_KEY).sign();
 
@@ -70,13 +72,21 @@ public class LoginController {
     }
 
     @PostMapping("/refresh/token")
-    public RetType refreshToken(@RequestBody String refreshToken) {
+    public RetType refreshToken(@RequestBody String refreshToken, HttpServletRequest request) {
         RetType res = new RetType();
         System.out.println("Refreshing token!?!");
-        System.out.println(refreshToken);
+//        System.out.println(refreshToken);
+        JWT refreshTokenJwt = null;
 
         try {
-            JWTValidator validator = JWTValidator.of(JWTUtil.parseToken(refreshToken));
+            refreshTokenJwt = JWTUtil.parseToken(refreshToken);
+            if (!refreshTokenJwt.getPayloads().getStr("tokenType").equals("refresh")) {
+                throw new ValidateException();
+            }
+            if (!refreshTokenJwt.getPayloads().getStr("ip").equals(request.getRemoteAddr())) {
+                throw new ValidateException();
+            }
+            JWTValidator validator = JWTValidator.of(refreshTokenJwt);
             validator.validateDate();
         } catch (ValidateException e) {
             res.setOk(false);
@@ -85,14 +95,13 @@ public class LoginController {
         }
 
         try {
-            JWT refreshTokenJwt = JWTUtil.parseToken(refreshToken);
-            System.out.println("OHHH: " + refreshTokenJwt.verify());
             String email = JWTUtil.parseToken(refreshToken).getPayloads().getStr("email");
             String clientIp = JWTUtil.parseToken(refreshToken).getPayloads().getStr("ip");
 
             String newAccessToken = JWT.create()
                     .setPayload("email", email)
                     .setPayload("ip", clientIp)
+                    .setPayload("tokenType", "access")
                     .setExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 10))
                     .setKey(SECRET_KEY).sign();
 

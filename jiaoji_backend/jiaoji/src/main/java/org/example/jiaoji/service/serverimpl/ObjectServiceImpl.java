@@ -1,21 +1,15 @@
 package org.example.jiaoji.service.serverimpl;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.alibaba.fastjson2.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
 import org.example.jiaoji.mapper.ObjectMapper;
 import org.example.jiaoji.mapper.RemarkMapper;
 import org.example.jiaoji.mapper.TopicMapper;

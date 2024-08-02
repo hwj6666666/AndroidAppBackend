@@ -74,3 +74,10 @@ public interface TopicMapper {
     @Update("update topic set views = views + 1 where id = #{id}")
     public void addViews(Integer id);
 }
+
+
+
+
+
+// CHANGE REPLICATION SOURCE TO SOURCE_HOST='124.70.129.93', SOURCE_USER='jiaoji',SOURCE_PASSWORD=':ex.RSTcgF3M!Ls', SOURCE_LOG_FILE='mysql-bin.000005',SOURCE_LOG_POS=30181929;
+// CHANGE MASTER TO MASTER_HOST='121.36.220.232', MASTER_USER='jiaoji',MASTER_PASSWORD=':ex.RSTcgF3M!Ls', MASTER_LOG_FILE='mysql-bin.000010',MASTER_LOG_POS=1267;

@@ -88,6 +88,7 @@ public class RemarkServiceImpl implements RemarkService {
         return ret;
     }
 
+    @SuppressWarnings("null")
     @Override
     public RetType deleteRemark(Integer id) {
         RetType ret = new RetType();

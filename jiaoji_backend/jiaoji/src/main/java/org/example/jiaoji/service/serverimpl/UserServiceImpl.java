@@ -213,7 +213,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public Boolean checkNameExist(String username) {
-    return userMapper.checkNameExist(username) !=0;
+    return userMapper.selectIfNameExist(username) !=0;
   }
 
   @Override
@@ -227,7 +227,7 @@ public class UserServiceImpl implements UserService {
     }
     String salt=userMapper.selectSaltByUid(id);
     String encodedPassword=PasswordEncoder.encode(password,salt);
-    userMapper.resetPassword(id, encodedPassword);
+    userMapper.updatePassword(id, encodedPassword);
     retType.setOk(true);
     retType.setMsg("重置密码成功");
     return retType;

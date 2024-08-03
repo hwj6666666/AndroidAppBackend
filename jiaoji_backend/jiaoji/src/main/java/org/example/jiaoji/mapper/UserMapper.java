@@ -47,7 +47,7 @@ public interface UserMapper {
     public List<Remark> selectAllRemarks(Integer object_id);
 
     @Update("update password set password = #{password} where uid = #{id}")
-    public void resetPassword(Integer id, String password);
+    public void updatePassword(Integer id, String password);
 
     @Update("insert into user(email,avatar,username) values(#{email},#{avatar},#{username})")
     public void insert(String email, String avatar,String username);
@@ -66,7 +66,7 @@ public interface UserMapper {
 
 
     @Select("select count(*) from user where username = #{username}")
-    public Integer checkNameExist(String username);
+    public Integer selectIfNameExist(String username);
 
     @Select("select salt from password where uid = #{uid}")
     public String selectSaltByUid(Integer uid);

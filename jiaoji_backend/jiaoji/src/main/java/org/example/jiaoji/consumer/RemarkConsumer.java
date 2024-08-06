@@ -21,7 +21,7 @@ public class RemarkConsumer {
         int id = jsonObject.getInteger("id");
         int uid = jsonObject.getInteger("uid");
         int change = jsonObject.getInteger("change");
-        remarkService.changeLike(id, uid, change);
+        remarkService.changeLike(id,change ,uid );
         System.out.println("Received message: " + message);  
     } 
 }

@@ -10,8 +10,6 @@ on:
 #      - '.github/**'
       - 'databaseSQL/**'
 #      - 'scripts/**'
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   build-and-test:

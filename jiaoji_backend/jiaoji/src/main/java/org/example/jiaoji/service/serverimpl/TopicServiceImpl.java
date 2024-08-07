@@ -198,25 +198,7 @@ public class TopicServiceImpl implements TopicService {
     }
 
     public List<Topic> hotTopic() {
-        List<Topic> topics = topicMapper.selectAll();
-        for (Topic topic : topics) {
-            int remarkNum = topic.getRemarkNum() * remarkRate;
-            int favor = topic.getFavor() * favorRate;
-            int views = topic.getViews() * viewsRate;
-            int objectNum = topic.getObjectNum() * objectRate;
-            LocalDateTime publicTime = topic.getPublicTime();
-            LocalDateTime now = LocalDateTime.now();
-            double hours = ChronoUnit.HOURS.between(publicTime, now) / 24;
-            double hot = (remarkNum + favor + views + objectNum) / (Math.pow(hours + 2, 1.2));
-            topic.setHot((int) hot);
-        }
-
-        List<Topic> topThreeHotTopics = topics.stream()
-                .sorted((t1, t2) -> Integer.compare(t2.getHot(), t1.getHot())) // 按 hot 值降序排序
-                .limit(3) // 取前 3 个元素
-                .collect(Collectors.toList());
-
-        return topThreeHotTopics;
+        return topicMapper.selecthot3();
     }
 
     public void addViews(Integer topicId) {

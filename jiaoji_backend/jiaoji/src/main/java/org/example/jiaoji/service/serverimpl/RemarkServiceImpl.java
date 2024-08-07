@@ -36,6 +36,7 @@ public class RemarkServiceImpl implements RemarkService {
         if (!remarkMapper.selectByUser(data.getUserId(), data.getObjectId()).isEmpty()) 
             return -1;
         remarkMapper.insert(data);
+        remarkMapper.updateScore("score"+data.getScore(), data.getObjectId());
         Objects object = objectsMapper.selectOneById(data.getObjectId());
         Topic topic = objectsMapper.selectTopicById(object.getTopicId());
         topicMapper.updateRemarkNum(topic.getRemarkNum() + 1, topic.getId());

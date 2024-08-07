@@ -1,0 +1,70 @@
+name: CI/CD Pipeline
+on:
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - '**/*.md'       # 忽略所有 Markdown 文件
+      - '**/*.txt'      # 忽略所有文本文件
+      - '**/docs/**'    # 忽略 docs 目录中的所有文件
+      - 'databaseSQL/**'
+
+jobs:
+  build-test-deploy-server-1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 22
+        uses: actions/setup-java@v3
+        with:
+          java-version: '22'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build and Test with Maven
+        run: mvn -B package --file jiaoji_backend/jiaoji/pom.xml
+
+      - name: Install SSH Key
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Stop Application on Server 1
+        run: ssh -o StrictHostKeyChecking=no root@121.36.220.232 'bash -s' < ./scripts/stop-app.sh
+
+      - name: Copy files to Server 1
+        run: scp -o StrictHostKeyChecking=no jiaoji_backend/jiaoji/target/jiaoji-0.0.1-SNAPSHOT.jar root@121.36.220.232:/www/wwwroot/jiaoji
+
+      - name: Restart Application on Server 1
+        run: ssh -o StrictHostKeyChecking=no root@121.36.220.232 'bash -s' < ./scripts/restart-app.sh
+
+  build-test-deploy-server-2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 22
+        uses: actions/setup-java@v3
+        with:
+          java-version: '22'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build and Test with Maven
+        run: mvn -B package --file jiaoji_backend/jiaoji/pom.xml
+
+      - name: Install SSH Key
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Stop Application on Server 2
+        run: ssh -o StrictHostKeyChecking=no root@121.37.187.80 'bash -s' < ./scripts/stop-app.sh
+
+      - name: Copy files to Server 2
+        run: scp -o StrictHostKeyChecking=no jiaoji_backend/jiaoji/target/jiaoji-0.0.1-SNAPSHOT.jar root@121.37.187.80:/www/wwwroot/jiaoji
+
+      - name: Restart Application on Server 2
+        run: ssh -o StrictHostKeyChecking=no root@121.37.187.80 'bash -s' < ./scripts/restart-app.sh

@@ -68,3 +68,5 @@ jobs:
 
       - name: Restart Application on Server 2
         run: ssh -o StrictHostKeyChecking=no root@121.37.187.80 'bash -s' < ./scripts/restart-app.sh
+
+#更换服务器后 需要改变重启脚本里的Java路径 在服务器添加公钥和环境变量

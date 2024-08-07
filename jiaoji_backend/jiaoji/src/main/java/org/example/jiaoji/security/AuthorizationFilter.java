@@ -45,6 +45,7 @@
          EXCLUDED_PATHS.add("/topic");
          EXCLUDED_PATHS.add("/object");
          EXCLUDED_PATHS.add("/refresh/token");
+         EXCLUDED_PATHS.add("/actuator/health");
          System.out.println("filter initialized");
      }
 

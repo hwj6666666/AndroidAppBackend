@@ -31,13 +31,33 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Stop Application
-        run: ssh -o StrictHostKeyChecking=no root@121.37.187.80 'bash -s' < ./scripts/stop-app.sh
-        # run: ssh -o StrictHostKeyChecking=no root@121.37.187.80 'bash scripts/stop-app.sh'
+#      - name: Stop Application
+#        run: ssh -o StrictHostKeyChecking=no root@121.36.220.232 'bash -s' < ./scripts/stop-app.sh
+#        # run: ssh -o StrictHostKeyChecking=no root@121.36.220.232 'bash scripts/stop-app.sh'
+#
+#      - name: Copy files via SSH
+#        run: scp -o StrictHostKeyChecking=no jiaoji_backend/jiaoji/target/jiaoji-0.0.1-SNAPSHOT.jar root@121.36.220.232:/www/wwwroot/jiaoji
+#
+#      - name: Restart Application
+#        run: ssh -o StrictHostKeyChecking=no root@121.36.220.232 'bash -s' < ./scripts/restart-app.sh
+#        # run: ssh -o StrictHostKeyChecking=no root@121.36.220.232 'bash scripts/restart-app.sh'
 
-      - name: Copy files via SSH
+      # Deploy to first server
+      - name: Stop Application on Server 1
+        run: ssh -o StrictHostKeyChecking=no root@121.36.220.232 'bash -s' < ./scripts/stop-app.sh
+
+      - name: Copy files to Server 1
+        run: scp -o StrictHostKeyChecking=no jiaoji_backend/jiaoji/target/jiaoji-0.0.1-SNAPSHOT.jar root@121.36.220.232:/www/wwwroot/jiaoji
+
+      - name: Restart Application on Server 1
+        run: ssh -o StrictHostKeyChecking=no root@121.36.220.232 'bash -s' < ./scripts/restart-app.sh
+
+      # Deploy to second server
+      - name: Stop Application on Server 2
+        run: ssh -o StrictHostKeyChecking=no root@121.37.187.80 'bash -s' < ./scripts/stop-app.sh
+
+      - name: Copy files to Server 2
         run: scp -o StrictHostKeyChecking=no jiaoji_backend/jiaoji/target/jiaoji-0.0.1-SNAPSHOT.jar root@121.37.187.80:/www/wwwroot/jiaoji
 
-      - name: Restart Application
+      - name: Restart Application on Server 2
         run: ssh -o StrictHostKeyChecking=no root@121.37.187.80 'bash -s' < ./scripts/restart-app.sh
-        # run: ssh -o StrictHostKeyChecking=no root@121.37.187.80 'bash scripts/restart-app.sh'

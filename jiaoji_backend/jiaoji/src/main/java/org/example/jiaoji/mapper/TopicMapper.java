@@ -7,8 +7,8 @@ import org.example.jiaoji.pojo.Topic;
 
 @Mapper
 public interface TopicMapper {
-    @Select("select * from topic") // 由于这里是用的注解，所以不需要写xml文件，但需要将原来的xml文件删除，不然会报错
-    public List<Topic> selectAll();
+    @Select("select * from topic Order By hot DESC limit 3") // 由于这里是用的注解，所以不需要写xml文件，但需要将原来的xml文件删除，不然会报错
+    public List<Topic> selecthot3();
     @Select("select * from topic Order By public_time DESC") // 由于这里是用的注解，所以不需要写xml文件，但需要将原来的xml文件删除，不然会报错
     public List<Topic> selectAllOrderByTime();
     @Select("select * from topic Order By hot DESC") // 由于这里是用的注解，所以不需要写xml文件，但需要将原来的xml文件删除，不然会报错

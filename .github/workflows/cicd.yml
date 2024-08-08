@@ -5,6 +5,8 @@ on:
     paths-ignore:
       - '**/*.md'       # 忽略所有 Markdown 文件
       - '**/*.txt'      # 忽略所有文本文件
+      - '**/*.sh'       # 忽略所有 Markdown 文件
+      - '**/*.yml'       # 忽略所有 Markdown 文件
       - '**/docs/**'    # 忽略 docs 目录中的所有文件
       - 'databaseSQL/**'
 

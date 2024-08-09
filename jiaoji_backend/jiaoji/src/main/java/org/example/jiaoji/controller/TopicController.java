@@ -70,7 +70,7 @@ public class TopicController {
                 stringRedisTemplate.opsForValue().set(key, json, 3600, java.util.concurrent.TimeUnit.SECONDS);
                 return ResponseEntity.ok(topic);
             } else {
-                kfkproducer.sendMessage("topic_views",id);
+                kfkproducer.sendMessage("topic_views",id.toString());
                 String json = stringRedisTemplate.opsForValue().get(key);
                 Topic topic = JSON.parseObject(json, new TypeReference<Topic>() {});
                 return ResponseEntity.ok(topic);

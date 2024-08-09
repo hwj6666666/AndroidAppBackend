@@ -22,6 +22,8 @@ public interface ObjectMapper {
     public Objects selectOneById(Integer Id);
     @Select("select id from object where title = #{title} and topic_id = #{topic_id}")
     public Integer selectIdByTitle(String title, Integer topic_id);
+    @Select("select * from object where title=#{title}")
+    public Objects selectByTitle(String title);
 
     @Select("select * from topic where id = #{id}")
     public Topic selectTopicById(Integer id);

@@ -5,12 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.alibaba.fastjson2.JSON;
-import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -21,24 +19,18 @@ import org.example.jiaoji.pojo.RetType;
 import org.example.jiaoji.pojo.Topic;
 import org.example.jiaoji.service.ObjectService;
 import org.example.jiaoji.service.TopicService;
+import org.example.jiaoji.utils.KafkaProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 
-import java.time.temporal.ChronoUnit;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
-import java.time.LocalDateTime;
-import java.util.stream.Collectors;
 
 @Service
 public class TopicServiceImpl implements TopicService {
-    public static final int viewsRate = 1;
-    public static final int remarkRate = 8;
-    public static final int favorRate = 15;
-    public static final int objectRate = 5;
 
 
     @Autowired
@@ -49,6 +41,8 @@ public class TopicServiceImpl implements TopicService {
     private ObjectService objectService;
     @Autowired
     private RestHighLevelClient client;
+    @Autowired
+    private KafkaProducerService kafkaProducer;
 
     public RetType insertTopic(Topic data) {
         RetType ret = new RetType();
@@ -70,15 +64,7 @@ public class TopicServiceImpl implements TopicService {
         topic.setPublicTime(java.time.LocalDateTime.now());
         topic.setBase64(data.getBase64());
         topicMapper.insert(topic);
-        IndexRequest request = new IndexRequest("topic").id(topic.getId().toString());
-        // 2.准备Json文档
-        request.source(JSON.toJSONString(topic), XContentType.JSON);
-        // 3.发送请求
-        try {
-            client.index(request, RequestOptions.DEFAULT);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        kafkaProducer.sendMessage("ES_store_topic", data.getTitle());
         ret.setMsg("上传成功");
         ret.setOk(true);
         ret.setData(topicMapper.selectByTitle(topic.getTitle()));

@@ -27,7 +27,7 @@ public class JiaojiApplication {
     @Bean
     public RestHighLevelClient client(){
         return new RestHighLevelClient(RestClient.builder(
-                HttpHost.create("http://121.26.220.232:9200")
+                HttpHost.create("http://121.36.220.232:9200")
         ));
     }
 }

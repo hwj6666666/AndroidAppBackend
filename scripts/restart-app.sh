@@ -19,7 +19,11 @@ if lsof -ti:$SERVER_PORT; then
     if lsof -ti:$SERVER_PORT; then
         echo "Failed to free up the port $SERVER_PORT. Exiting."
         exit 1
+    else
+        echo "Successfully freed up the port $SERVER_PORT."
     fi
+else
+    echo "Port $SERVER_PORT is free. No process needs to be terminated."
 fi
 
 # 进入应用程序目录
@@ -33,13 +37,17 @@ nohup java -jar jiaoji-0.0.1-SNAPSHOT.jar \
   --spring.datasource.password=$SPRING_DATASOURCE_PASSWORD \
   --server.port=$SERVER_PORT > jiaoji.log 2>&1 &
 
-# 等待几秒钟以确保应用程序有足够时间启动
-sleep 10
+# 循环等待并检查应用程序是否成功启动
+for i in {1..10}; do
+    if lsof -ti:$SERVER_PORT; then
+        echo "Application started successfully on port $SERVER_PORT."
+        exit 0
+    else
+        echo "Waiting for application to start on port $SERVER_PORT... ($i/10)"
+        sleep 2
+    fi
+done
 
-# 检查应用程序是否成功启动
-if lsof -ti:$SERVER_PORT; then
-    echo "Application started successfully on port $SERVER_PORT."
-else
-    echo "Failed to start application on port $SERVER_PORT. Check jiaoji.log for details."
-    exit 1
-fi
+# 如果循环结束后仍未启动，则报告失败
+echo "Failed to start application on port $SERVER_PORT. Check jiaoji.log for details."
+exit 1

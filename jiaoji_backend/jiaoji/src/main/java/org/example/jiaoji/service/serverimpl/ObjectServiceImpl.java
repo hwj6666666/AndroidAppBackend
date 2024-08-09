@@ -1,15 +1,9 @@
 package org.example.jiaoji.service.serverimpl;
 
-import java.io.IOException;
 import java.util.List;
 
-import com.alibaba.fastjson2.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.xcontent.XContentType;
 import org.example.jiaoji.mapper.ObjectMapper;
 import org.example.jiaoji.mapper.RemarkMapper;
 import org.example.jiaoji.mapper.TopicMapper;
@@ -19,6 +13,7 @@ import org.example.jiaoji.pojo.RetType;
 import org.example.jiaoji.pojo.Topic;
 import org.example.jiaoji.pojo.top3Object;
 import org.example.jiaoji.service.ObjectService;
+import org.example.jiaoji.utils.KafkaProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +27,7 @@ public class ObjectServiceImpl implements ObjectService {
     @Autowired
     private RemarkMapper remarkMapper;
     @Autowired
-    private RestHighLevelClient client;
+    private KafkaProducerService kafkaProducer;
 
     @Transactional
     public Integer InsertObject(Objects data) {
@@ -60,16 +55,8 @@ public class ObjectServiceImpl implements ObjectService {
         topicMapper.updateObjectNum(topic.getObjectNum() + 1, topic.getId());
         objectMapper.insert(object);
         remarkMapper.insertScore(object.getId());
-        IndexRequest request = new IndexRequest("object").id(object.getId().toString());
+        kafkaProducer.sendMessage("ES_store_object", data.getTitle());
 
-        // 2.准备Json文档
-        request.source(JSON.toJSONString(object), XContentType.JSON);
-        // 3.发送请求
-        try {
-            client.index(request, RequestOptions.DEFAULT);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         ret.setMsg("上传成功");
 
         ret.setOk(true);

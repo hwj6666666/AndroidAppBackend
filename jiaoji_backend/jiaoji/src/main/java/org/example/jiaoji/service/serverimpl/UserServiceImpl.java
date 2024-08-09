@@ -19,15 +19,19 @@ import org.example.jiaoji.mapper.UserMapper;
 import org.example.jiaoji.pojo.*;
 import org.example.jiaoji.security.PasswordEncoder;
 import org.example.jiaoji.service.UserService;
+import org.example.jiaoji.utils.KafkaProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-  @Autowired private UserMapper userMapper;
+  @Autowired 
+  private UserMapper userMapper;
   @Autowired
   private RestHighLevelClient client;
+  @Autowired
+  private KafkaProducerService kafkaProducer;
 
   public List<User> SelectAll() {
     return userMapper.selectAll();
@@ -58,6 +62,7 @@ public class UserServiceImpl implements UserService {
     user.setId(id);
     userMapper.update(user);
     User newuser = userMapper.selectByUserId(id);
+    kafkaProducer.sendMessage("ES_update_user", id);
     IndexRequest request = new IndexRequest("user").id(newuser.getId().toString());
 
     // 2.准备Json文档
@@ -99,19 +104,8 @@ public class UserServiceImpl implements UserService {
     String salt=PasswordEncoder.generateRandomSalt();
     String encodedPassword=PasswordEncoder.encode(password,salt);
     userMapper.insertPassword(email,id,salt,encodedPassword);
-    User user=userMapper.selectByUserId(id);
-
-    IndexRequest request = new IndexRequest("user").id(id.toString());
-
-    // 2.准备Json文档
-    request.source(JSON.toJSONString(user), XContentType.JSON);
-    // 3.发送请求
-      try {
-          client.index(request, RequestOptions.DEFAULT);
-      } catch (IOException e) {
-          throw new RuntimeException(e);
-      }
-
+    kafkaProducer.sendMessage("ES_store_user", id);
+    
       retType.setData(id);
     retType.setMsg("注册成功");
     retType.setOk(true);

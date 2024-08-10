@@ -31,7 +31,7 @@ public interface TopicMapper {
     @Select("select * from topic where title = #{keyword}")
     public Topic selectByTitle(String keyword);
 
-    @Insert("insert into topic(class_id,user_id,title,picture,introduction,hot,public_time,base64) values(#{classId},#{userId},#{title},#{picture},#{introduction},#{hot},#{publicTime},#{base64})")
+    @Insert("insert into topic(class_id,user_id,title,introduction,hot,public_time,base64) values(#{classId},#{userId},#{title},#{introduction},#{hot},#{publicTime},#{base64})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     public int insert(Topic topic);
 

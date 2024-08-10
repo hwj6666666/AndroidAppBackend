@@ -14,7 +14,6 @@ public class Topic {
     private Integer classId;//详见前端页面
     private Integer userId;
     private String title;
-    private String picture;
     private String introduction;
     private Integer hot;//热度，将子话题的评论量累加
     private LocalDateTime publicTime;

@@ -60,7 +60,6 @@ public class TopicServiceImpl implements TopicService {
         topic.setIntroduction(data.getIntroduction());
         topic.setUserId(data.getUserId());
         topic.setHot(0);
-        topic.setPicture("this is topic picture");
         topic.setPublicTime(java.time.LocalDateTime.now());
         topic.setBase64(data.getBase64());
         topicMapper.insert(topic);

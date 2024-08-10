@@ -22,6 +22,6 @@ public class DataSourceAspect {
     @Before("execution(* org.example.jiaoji.mapper..*.insert*(..)) ||execution(* org.example.jiaoji.mapper..*.sub*(..)) || execution(* org.example.jiaoji.mapper..*.add*(..)) || execution(* org.example.jiaoji.mapper..*.update*(..)) || execution(* org.example.jiaoji.mapper..*.delete*(..))")
     public void setWriteDataSourceType() {
         DataSourceContextHolder.setDataSourceType(DataSourceType.MASTER);
-        log.info("dataSource切换到：Read");
+        log.info("dataSource切换到：Write");
     }
 }

@@ -1,0 +1,21 @@
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml" />
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <contextName>logstash-test</contextName>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %contextName %-5level %logger{50} -%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <!--指定logstash ip：监听端口-->
+        <destination>121.36.220.232:9601</destination>
+        <encoder charset="UTF-8" class="net.logstash.logback.encoder.LogstashEncoder" />
+    </appender>
+    <root level="info">
+
+        <appender-ref ref="console"/>
+
+        <appender-ref ref="LOGSTASH"/>
+    </root>
+</configuration>
